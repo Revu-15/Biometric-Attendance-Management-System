@@ -13,9 +13,29 @@
 
 An enterprise-grade, end-to-end **Biometric Attendance, Service Consumption & Monthly Settlement Engine**. Built with FastAPI, SQLAlchemy, WebSockets, and a modern React/TypeScript dashboard.
 
-[🚀 Live Web App (Vercel)](https://biometric-attendance-management-sys-pi.vercel.app) • [⚙️ Live API Docs (Render)](https://biometric-attendance-management-system-kefe.onrender.com/docs) • [Deployment Guide](file:///c:/Users/polam/Desktop/Biometric%20Attendance%20&%20Management%20System/DEPLOYMENT.md)
+---
 
-</div>
+## 🌐 Live Cloud Demo Links
+
+[![Live Web App Vercel](https://img.shields.io/badge/🚀_Live_App-Vercel_Deployment-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://biometric-attendance-management-sys-pi.vercel.app)
+[![Live Web App GitHub Pages](https://img.shields.io/badge/🌐_Live_App-GitHub_Pages-22C55E?style=for-the-badge&logo=github&logoColor=white)](https://revu-15.github.io/Biometric-Attendance-Management-System/)
+[![Swagger API Docs](https://img.shields.io/badge/⚙️_API_Docs-Render_Cloud-46E3B7?style=for-the-badge&logo=fastapi&logoColor=black)](https://biometric-attendance-management-system-kefe.onrender.com/docs)
+
+| Platform / Service | Live Hyperlink | Status |
+|---|---|:---:|
+| **🚀 Production Web App (Vercel)** | [biometric-attendance-management-sys-pi.vercel.app](https://biometric-attendance-management-sys-pi.vercel.app) | 🟢 **ONLINE** |
+| **🌐 Web App (GitHub Pages)** | [revu-15.github.io/Biometric-Attendance-Management-System](https://revu-15.github.io/Biometric-Attendance-Management-System/) | 🟢 **ONLINE** |
+| **⚙️ Backend API Endpoint (Render)** | [biometric-attendance-management-system-kefe.onrender.com](https://biometric-attendance-management-system-kefe.onrender.com) | 🟢 **ACTIVE** |
+| **📚 Interactive Swagger API Docs** | [biometric-attendance-management-system-kefe.onrender.com/docs](https://biometric-attendance-management-system-kefe.onrender.com/docs) | 🟢 **ACTIVE** |
+
+---
+
+### 🔑 Demo Login Credentials
+
+| Role | Email | Password | Access Level |
+|---|---|---|---|
+| **Super Admin** | `admin@system.com` | `admin123` | Full Administrative & Monthly Settlement Control |
+| **Staff Operator** | `staff@system.com` | `staff123` | Operational Attendance & Payment Recording |
 
 ---
 
