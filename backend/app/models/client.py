@@ -8,6 +8,7 @@ class Client(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     client_code = Column(String(50), unique=True, index=True, nullable=False) # e.g. STU-2026-001
+    enrollment_id = Column(String(50), nullable=True, index=True) # e.g. ENR-99882
     name = Column(String(120), nullable=False)
     mobile = Column(String(20), nullable=False)
     email = Column(String(120), nullable=True)

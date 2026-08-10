@@ -19,10 +19,12 @@ export const ClientProfileModal: React.FC<ClientProfileModalProps> = ({
   const [history, setHistory] = useState<any[]>([]);
   const [payments, setPayments] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const [imageError, setImageError] = useState(false);
 
   useEffect(() => {
     if (client && isOpen) {
       loadData();
+      setImageError(false);
     }
   }, [client, isOpen]);
 
@@ -54,19 +56,35 @@ export const ClientProfileModal: React.FC<ClientProfileModalProps> = ({
       <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '750px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem' }}>
           <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-            <div style={{
-              width: '56px',
-              height: '56px',
-              borderRadius: '16px',
-              background: 'linear-gradient(135deg, #06B6D4, #3B82F6)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '1.5rem',
-              fontWeight: 800
-            }}>
-              {client.name.charAt(0)}
-            </div>
+            {client.photo_url && !imageError ? (
+              <img
+                src={client.photo_url}
+                alt={client.name}
+                style={{
+                  width: '56px',
+                  height: '56px',
+                  borderRadius: '16px',
+                  objectFit: 'cover',
+                  border: '2px solid rgba(6, 182, 212, 0.5)'
+                }}
+                onError={() => setImageError(true)}
+              />
+            ) : (
+              <div style={{
+                width: '56px',
+                height: '56px',
+                borderRadius: '16px',
+                background: 'linear-gradient(135deg, #06B6D4, #3B82F6)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '1.5rem',
+                fontWeight: 800,
+                color: '#ffffff'
+              }}>
+                {client.name.charAt(0)}
+              </div>
+            )}
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <h2 style={{ fontSize: '1.4rem', fontWeight: 800 }}>{client.name}</h2>
@@ -99,12 +117,16 @@ export const ClientProfileModal: React.FC<ClientProfileModalProps> = ({
 
         {/* 3-Column Info Cards */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', marginBottom: '1.5rem' }}>
-          <div className="glass-card" style={{ padding: '1rem' }}>
+          <div className="glass-card" style={{ padding: '1rem', display: 'flex', flexDirection: 'column', gap: '4px' }}>
             <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '4px' }}>
               CLIENT DETAILS
             </div>
-            <div style={{ fontSize: '0.85rem', marginBottom: '2px' }}>📱 {client.mobile}</div>
-            <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>📧 {client.email || 'N/A'}</div>
+            <div style={{ fontSize: '0.85rem' }}>📱 {client.mobile}</div>
+            <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={client.email}>📧 {client.email || 'N/A'}</div>
+            {client.enrollment_id && <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>🆔 {client.enrollment_id}</div>}
+            {client.gender && <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>🚻 {client.gender}</div>}
+            {client.date_of_birth && <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>📅 {client.date_of_birth}</div>}
+            {client.address && <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }} title={client.address}>📍 {client.address}</div>}
             <div style={{ fontSize: '0.8rem', marginTop: '6px', color: '#06B6D4', fontWeight: 600 }}>
               Type: {client.client_type}
             </div>

@@ -27,6 +27,7 @@ def get_clients(
         q = q.filter(
             (Client.name.ilike(search_pattern)) |
             (Client.client_code.ilike(search_pattern)) |
+            (Client.enrollment_id.ilike(search_pattern)) |
             (Client.mobile.ilike(search_pattern)) |
             (Client.biometric_user_id.ilike(search_pattern))
         )
@@ -84,6 +85,7 @@ def create_client(
 
     client = Client(
         client_code=payload.client_code,
+        enrollment_id=payload.enrollment_id,
         name=payload.name,
         mobile=payload.mobile,
         email=payload.email,

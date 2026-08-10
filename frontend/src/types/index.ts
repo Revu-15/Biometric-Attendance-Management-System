@@ -20,6 +20,7 @@ export interface ClientPlan {
 export interface Client {
   id: number;
   client_code: string;
+  enrollment_id?: string;
   name: string;
   mobile: string;
   email?: string;

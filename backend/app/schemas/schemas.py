@@ -25,6 +25,7 @@ class RegisterRequest(BaseModel):
 # Client Schemas
 class ClientBase(BaseModel):
     client_code: str
+    enrollment_id: Optional[str] = None
     name: str
     mobile: str
     email: Optional[str] = None
@@ -33,7 +34,7 @@ class ClientBase(BaseModel):
     date_of_birth: Optional[date] = None
     photo_url: Optional[str] = None
     biometric_user_id: str
-    client_type: str = "Student" # Student, Mess, Hotel, Staff, Other
+    client_type: str = "Student" # Student, Hotel resident, Monthly mess customer, Staff, Other
     status: str = "active" # active, inactive
 
 class ClientCreate(ClientBase):
@@ -42,6 +43,7 @@ class ClientCreate(ClientBase):
 
 class ClientUpdate(BaseModel):
     name: Optional[str] = None
+    enrollment_id: Optional[str] = None
     mobile: Optional[str] = None
     email: Optional[str] = None
     address: Optional[str] = None

@@ -20,9 +20,14 @@ export const ClientsPage: React.FC<ClientsPageProps> = ({ onSelectClient, onOpen
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [formData, setFormData] = useState({
     client_code: `STU-2026-${Math.floor(100 + Math.random() * 900)}`,
+    enrollment_id: '',
     name: '',
     mobile: '',
     email: '',
+    address: '',
+    gender: 'Other',
+    date_of_birth: '',
+    photo_url: '',
     biometric_user_id: `${Math.floor(100 + Math.random() * 900)}`,
     client_type: 'Student',
     status: 'active',
@@ -60,7 +65,12 @@ export const ClientsPage: React.FC<ClientsPageProps> = ({ onSelectClient, onOpen
     try {
       const payload: any = {
         ...formData,
-        plan_id: formData.plan_id ? Number(formData.plan_id) : undefined
+        plan_id: formData.plan_id ? Number(formData.plan_id) : undefined,
+        enrollment_id: formData.enrollment_id || undefined,
+        address: formData.address || undefined,
+        gender: formData.gender || 'Other',
+        date_of_birth: formData.date_of_birth || undefined,
+        photo_url: formData.photo_url || undefined
       };
       await api.createClient(payload);
       setIsAddModalOpen(false);
@@ -68,9 +78,14 @@ export const ClientsPage: React.FC<ClientsPageProps> = ({ onSelectClient, onOpen
       // Reset form
       setFormData({
         client_code: `STU-2026-${Math.floor(100 + Math.random() * 900)}`,
+        enrollment_id: '',
         name: '',
         mobile: '',
         email: '',
+        address: '',
+        gender: 'Other',
+        date_of_birth: '',
+        photo_url: '',
         biometric_user_id: `${Math.floor(100 + Math.random() * 900)}`,
         client_type: 'Student',
         status: 'active',
@@ -139,6 +154,7 @@ export const ClientsPage: React.FC<ClientsPageProps> = ({ onSelectClient, onOpen
             <thead>
               <tr>
                 <th>Client Code</th>
+                <th>Enrollment ID</th>
                 <th>Name</th>
                 <th>Mobile</th>
                 <th>Biometric ID</th>
@@ -150,13 +166,14 @@ export const ClientsPage: React.FC<ClientsPageProps> = ({ onSelectClient, onOpen
             </thead>
             <tbody>
               {loading ? (
-                <tr><td colSpan={8} style={{ textAlign: 'center', color: 'var(--text-secondary)' }}>Loading clients...</td></tr>
+                <tr><td colSpan={9} style={{ textAlign: 'center', color: 'var(--text-secondary)' }}>Loading clients...</td></tr>
               ) : clients.length === 0 ? (
-                <tr><td colSpan={8} style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '2rem' }}>No clients found matching search</td></tr>
+                <tr><td colSpan={9} style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '2rem' }}>No clients found matching search</td></tr>
               ) : (
                 clients.map((c) => (
                   <tr key={c.id}>
                     <td style={{ fontWeight: 700, color: '#06B6D4' }}>{c.client_code}</td>
+                    <td><span style={{ fontFamily: 'monospace', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{c.enrollment_id || '—'}</span></td>
                     <td style={{ fontWeight: 600 }}>{c.name}</td>
                     <td>{c.mobile}</td>
                     <td>
@@ -277,6 +294,37 @@ export const ClientsPage: React.FC<ClientsPageProps> = ({ onSelectClient, onOpen
                     ))}
                   </select>
                 </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '4px' }}>Enrollment ID</label>
+                  <input type="text" className="input-field" placeholder="e.g. ENR-99882" value={formData.enrollment_id} onChange={(e) => setFormData({ ...formData, enrollment_id: e.target.value })} />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '4px' }}>Gender</label>
+                  <select className="input-field" value={formData.gender} onChange={(e) => setFormData({ ...formData, gender: e.target.value })}>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '4px' }}>Date of Birth</label>
+                  <input type="date" className="input-field" value={formData.date_of_birth} onChange={(e) => setFormData({ ...formData, date_of_birth: e.target.value })} />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '4px' }}>Photo URL</label>
+                  <input type="text" className="input-field" placeholder="e.g. https://example.com/photo.jpg" value={formData.photo_url} onChange={(e) => setFormData({ ...formData, photo_url: e.target.value })} />
+                </div>
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '4px' }}>Address</label>
+                <textarea className="input-field" placeholder="Complete physical address..." style={{ minHeight: '60px', resize: 'vertical' }} value={formData.address} onChange={(e) => setFormData({ ...formData, address: e.target.value })} />
               </div>
 
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '1rem' }}>
