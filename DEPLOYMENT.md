@@ -269,17 +269,47 @@ sudo certbot --nginx -d attendiq.yourdomain.com
 
 ---
 
-## 📟 Biometric Hardware Device Configuration for Cloud
+## 🌐 Custom Domain Setup (GitHub Pages + Backend API)
 
-To send punches from physical biometric scanners (ZKTeco / eSSL / Hikvision) to your deployed server:
+To point your own custom domain (e.g., `attendiq.com` or `app.yourdomain.com`) to the application:
 
-1. **Set Server IP / Domain**: Point the machine ADMS / Push setting to your domain:
+---
+
+### Part A: Custom Domain for GitHub Pages Frontend (`app.yourdomain.com`)
+
+1. **DNS Provider Setup (GoDaddy / Namecheap / Cloudflare / Route53)**:
+   - Create a **CNAME Record**:
+     - **Type**: `CNAME`
+     - **Host / Name**: `app` (or `@` for apex domain `attendiq.com`)
+     - **Target / Value**: `revu-15.github.io`
+     - **TTL**: `Automatic` or `3600`
+
+2. **Configure Domain in GitHub**:
+   - Go to GitHub Repo: **Settings** → **Pages**.
+   - Under **Custom domain**, type your domain name: `app.yourdomain.com` (or `attendiq.com`).
+   - Click **Save**.
+   - Check **Enforce HTTPS** (GitHub will automatically issue a free Let's Encrypt SSL certificate).
+
+---
+
+### Part B: Custom Subdomain for Backend API & Biometric Webhooks (`api.yourdomain.com`)
+
+1. **DNS Provider Setup**:
+   - Create an **A Record** (for VPS server IP) or **CNAME Record** (for Cloud Host):
+     - **Type**: `A`
+     - **Host / Name**: `api`
+     - **Value**: `YOUR_VPS_PUBLIC_IP` (e.g. `185.199.108.153`)
+     - *(Or CNAME to `your-backend.onrender.com` if using Render)*
+
+2. **Nginx SSL Setup**:
+   ```bash
+   # Issue SSL for your API subdomain
+   sudo certbot --nginx -d api.yourdomain.com
    ```
-   Server IP / Domain: attendiq.yourdomain.com
-   Server Port: 443 (or 80)
-   Push URL Path: /api/v1/attendance/webhook
-   ```
-2. **Assign Device ID**: Ensure `Device ID` on the machine matches the registered `device_id` in the ATTENDIQ Devices panel (e.g. `DEVICE-01`).
+
+3. **Biometric Machine Configuration**:
+   Configure hardware scanners to push punches to:
+   `https://api.yourdomain.com/api/v1/attendance/webhook`
 
 ---
 
