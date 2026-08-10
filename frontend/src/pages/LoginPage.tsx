@@ -22,7 +22,9 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [activeRole, setActiveRole] = useState<'admin' | 'staff' | null>(null);
-  const [serverUrl, setServerUrl] = useState<string>(localStorage.getItem('bio_api_server_url') || 'http://127.0.0.1:8000');
+  const [serverUrl, setServerUrl] = useState<string>(
+    localStorage.getItem('bio_api_server_url') || 'https://biometric-attendance-management-system-kefe.onrender.com'
+  );
   const [showServerConfig, setShowServerConfig] = useState<boolean>(false);
 
   const saveServerUrl = (url: string) => {

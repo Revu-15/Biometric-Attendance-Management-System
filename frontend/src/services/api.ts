@@ -7,9 +7,9 @@ const getApiBase = (): string => {
   const envUrl = (import.meta as any).env?.VITE_API_BASE;
   if (envUrl) return envUrl;
 
-  // On GitHub Pages, if no server URL configured, fallback to http://127.0.0.1:8000/api/v1
+  // On GitHub Pages, if no server URL configured, fallback to live Render production API
   if (typeof window !== 'undefined' && window.location.hostname.includes('github.io')) {
-    return 'http://127.0.0.1:8000/api/v1';
+    return 'https://biometric-attendance-management-system-kefe.onrender.com/api/v1';
   }
   return '/api/v1';
 };
