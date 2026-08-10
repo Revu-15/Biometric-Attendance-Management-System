@@ -275,71 +275,99 @@ Content-Type: application/json
 
 ```
 Biometric Attendance & Management System/
-├── backend/                            # FastAPI Backend Engine
+├── .github/
+│   └── workflows/
+│       └── deploy.yml                  # Automated GitHub Actions frontend deploy to GitHub Pages
+│
+├── backend/                            # FastAPI Modular Backend Architecture
 │   ├── app/
-│   │   ├── main.py                     # Entry point, WebSockets, DB seeding
+│   │   ├── main.py                     # App entry point, CORS, WebSockets, Startup seeding
 │   │   ├── core/
-│   │   │   ├── config.py               # Settings (JWT secret, DB, default rules)
-│   │   │   ├── database.py             # SQLAlchemy 2.0 engine & session
-│   │   │   └── security.py             # JWT token generation & RBAC guards
-│   │   ├── models/                     # SQLAlchemy Models
-│   │   │   ├── user.py                 # System users & roles
-│   │   │   ├── client.py               # Universal Client Entity (enrollment_id, client_type)
-│   │   │   ├── plan.py                 # Membership plans
-│   │   │   ├── client_plan.py          # Active subscriptions
-│   │   │   ├── attendance.py          # Biometric attendance logs
-│   │   │   ├── payment.py             # Transactions & payments
-│   │   │   ├── device.py              # Biometric hardware registry
-│   │   │   └── audit_log.py           # Immutable audit log
-│   │   ├── api/                        # REST Controllers
-│   │   │   ├── auth.py                # Login, Register, Me
-│   │   │   ├── clients.py             # Client CRUD, enrollment_id search & profile
-│   │   │   ├── plans.py               # Plan creation & assignment
-│   │   │   ├── attendance.py          # Webhooks, Simulator, Logs, Manual
-│   │   │   ├── payments.py            # Payments API
-│   │   │   ├── reports.py             # Dashboard stats, Monthly Statement, Locks
-│   │   │   ├── devices.py             # Device management
-│   │   │   └── audit_logs.py          # Security logs
-│   │   ├── services/
-│   │   │   └── validation_service.py  # 6-step attendance validation pipeline
-│   │   └── integrations/
-│   │       └── biometric/             # Pluggable device hardware adapters
-│   │           ├── base.py
-│   │           ├── generic.py
-│   │           └── zkteco.py
-│   └── requirements.txt
+│   │   │   ├── config.py               # Application settings (JWT secrets, DB, cooldown rules)
+│   │   │   ├── database.py             # SQLAlchemy 2.0 connection engine & SessionLocal
+│   │   │   └── security.py             # Password hashing (bcrypt) & JWT RBAC guards
+│   │   │
+│   │   ├── models/                     # SQLAlchemy ORM Database Models
+│   │   │   ├── user.py                 # User model (Super Admin & Staff roles)
+│   │   │   ├── client.py               # Universal Client model (enrollment_id, client_code, client_type)
+│   │   │   ├── plan.py                 # Membership / Fee Plan model
+│   │   │   ├── client_plan.py          # Active Subscriptions mapping
+│   │   │   ├── attendance.py          # Attendance Log model with 7 status types
+│   │   │   ├── payment.py             # Payment transaction records
+│   │   │   ├── device.py              # Biometric Hardware Registry & heartbeat status
+│   │   │   ├── monthly_lock.py        # Monthly settlement locking state
+│   │   │   ├── system_setting.py      # Business rules & late threshold settings
+│   │   │   ├── failed_punch_log.py    # Raw failed punch logs for sync recovery
+│   │   │   └── audit_log.py           # Immutable security audit log
+│   │   │
+│   │   ├── schemas/                    # Pydantic Schemas & Data Serialization
+│   │   │   └── schemas.py             # Request & Response payload validation schemas
+│   │   │
+│   │   ├── api/                        # REST Controllers & API Endpoints
+│   │   │   ├── auth.py                # POST /auth/login, /auth/register, GET /auth/me
+│   │   │   ├── clients.py             # GET/POST/PUT/DELETE /clients (Enrollment ID search)
+│   │   │   ├── plans.py               # GET/POST /plans (Plan creation & assignment)
+│   │   │   ├── attendance.py          # POST /attendance/webhook, simulator, client history
+│   │   │   ├── payments.py            # GET/POST /payments (Payment ledger)
+│   │   │   ├── reports.py             # GET /reports/dashboard-stats, /monthly-statement, /backup-db
+│   │   │   ├── devices.py             # GET/POST /devices (Hardware registry)
+│   │   │   └── audit_logs.py          # GET /audit-logs (Security trail)
+│   │   │
+│   │   ├── services/                   # Encapsulated Business Logic Layer
+│   │   │   ├── attendance_service.py  # 6-step punch validation, 5-min cooldown, month lock check
+│   │   │   ├── biometric_service.py   # Hardware adapter selection (Generic/ZKTeco) & heartbeats
+│   │   │   ├── billing_service.py     # Monthly statements, meal consumption & balance dues
+│   │   │   ├── report_service.py      # Dashboard analytics KPI counters & alert feed
+│   │   │   └── validation_service.py  # Validation result data contracts
+│   │   │
+│   │   ├── workers/                    # Asynchronous Background Sync Tasks
+│   │   │   └── attendance_sync.py     # Offline device sync recovery worker
+│   │   │
+│   │   └── integrations/biometric/     # Multi-Vendor Hardware Adapters
+│   │       ├── base.py                 # Abstract BaseBiometricAdapter contract
+│   │       ├── generic.py              # Generic HTTP webhook parser
+│   │       └── zkteco.py               # ZKTeco / eSSL ADMS push log parser
+│   │
+│   └── requirements.txt                # Python backend dependencies
 │
-├── frontend/                           # React + TypeScript + Vite UI
+├── frontend/                           # React 18 + TypeScript 5 + Vite UI
 │   ├── src/
-│   │   ├── App.tsx                     # Main routing & dual RBAC container
-│   │   ├── services/api.ts             # Typed REST API client
-│   │   ├── components/
-│   │   │   ├── Sidebar.tsx             # Dynamic RBAC sidebar navigation
-│   │   │   ├── Navbar.tsx              # Top header bar
-│   │   │   ├── ClientProfileModal.tsx  # Client profile view
-│   │   │   ├── MonthlyStatementModal.tsx # Invoice & monthly settlement modal
-│   │   │   └── PunchSimulatorModal.tsx # Built-in biometric punch simulator
-│   │   └── pages/
-│   │       ├── LoginPage.tsx           # Login & Staff Registration page
-│   │       ├── DashboardPage.tsx       # Super Admin Intelligence Dashboard
+│   │   ├── App.tsx                     # Main router container & dual RBAC layout
+│   │   ├── services/api.ts             # REST API client with dynamic server URL fallback
+│   │   │
+│   │   ├── components/                 # Reusable Modern UI Components
+│   │   │   ├── Sidebar.tsx             # Dynamic RBAC navigation sidebar
+│   │   │   ├── Navbar.tsx              # Header navbar with user profile & status
+│   │   │   ├── ClientProfileModal.tsx  # Detailed client profile modal
+│   │   │   ├── MonthlyStatementModal.tsx # Invoice & monthly settlement statement modal
+│   │   │   └── PunchSimulatorModal.tsx # Interactive biometric punch simulator
+│   │   │
+│   │   └── pages/                      # 12 Core Dashboard Modules
+│   │       ├── LoginPage.tsx           # Login, Staff Register & Server URL config
+│   │       ├── DashboardPage.tsx       # Super Admin Executive Dashboard
 │   │       ├── StaffDashboardPage.tsx  # Staff Operations Dashboard
-│   │       ├── ClientsPage.tsx         # Client Directory with Enrollment ID & Type filters
-│   │       ├── AttendancePage.tsx      # Attendance Logs
-│   │       ├── MealsPage.tsx           # Meal Consumption tracking
-│   │       ├── PlansPage.tsx           # Membership Plans
-│   │       ├── PaymentsPage.tsx        # Payments & Billing
-│   │       ├── ReportsPage.tsx         # Monthly Settlement Statements
-│   │       ├── AnalyticsPage.tsx       # Analytics & Intelligence
-│   │       ├── DevicesPage.tsx         # Biometric Hardware Manager
+│   │       ├── ClientsPage.tsx         # Universal Client Directory (Enrollment ID & Type search)
+│   │       ├── AttendancePage.tsx      # Attendance Log Feed
+│   │       ├── MealsPage.tsx           # Service & Meal Consumption tracking
+│   │       ├── PlansPage.tsx           # Membership & Fee Plans
+│   │       ├── PaymentsPage.tsx        # Payment Ledger & Balances
+│   │       ├── ReportsPage.tsx         # Monthly Settlement Reports & Exports
+│   │       ├── AnalyticsPage.tsx       # System Analytics & Intelligence
+│   │       ├── DevicesPage.tsx         # Biometric Device Manager
 │   │       ├── RulesAndSettingsPage.tsx# Attendance Rules & Settings
-│   │       ├── AuditLogsPage.tsx       # Audit Logs
-│   │       └── AlertsPage.tsx          # System Alerts
-│   ├── vite.config.ts                  # Vite proxy setup (:3000 → :8000)
-│   └── package.json
+│   │       ├── AuditLogsPage.tsx       # Security Audit Logs
+│   │       └── AlertsPage.tsx          # Notifications & Warning Feed
+│   │
+│   ├── vercel.json                     # Vercel SPA routing configuration
+│   ├── vite.config.ts                  # Vite build configuration (base relative path & proxy)
+│   └── package.json                    # Frontend dependencies
 │
-├── PRESENTATION.md                     # 12-Slide Executive Presentation Deck
-├── start_system.bat                    # One-click Windows launcher
-└── README.md                           # Documentation
+├── DEPLOYMENT.md                       # Comprehensive Docker, VPS & Cloud Deployment Guide
+├── PRESENTATION.md                     # 12-Slide Executive & Technical Slide Deck
+├── render.yaml                         # 1-Click Render Cloud Blueprint
+├── vercel.json                         # Root Vercel SPA Deployment Configuration
+├── start_system.bat                    # One-click local launcher for Windows
+└── README.md                           # Master Project Documentation
 ```
 
 ---
