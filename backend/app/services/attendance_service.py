@@ -49,6 +49,14 @@ class AttendanceService:
             db.add(device)
             db.commit()
         else:
+            # Device API Key verification if configured
+            provided_key = event.raw_payload.get("api_key") or event.raw_payload.get("key")
+            if device.api_key and provided_key and device.api_key != provided_key:
+                return {
+                    "success": False,
+                    "error": "UNAUTHORIZED_DEVICE",
+                    "message": f"Device authentication failed for {event.device_id}. Invalid API Key."
+                }
             device.status = "ONLINE"
             device.last_seen = datetime.now(timezone.utc)
             db.commit()
