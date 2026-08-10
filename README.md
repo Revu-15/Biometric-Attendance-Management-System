@@ -13,7 +13,7 @@
 
 An enterprise-grade, end-to-end **Biometric Attendance, Service Consumption & Monthly Settlement Engine**. Built with FastAPI, SQLAlchemy, WebSockets, and a modern React/TypeScript dashboard.
 
-[Features](#-key-features) • [Workflow Architecture](#-end-to-end-workflow-architecture) • [RBAC & Permissions](#-role-based-access-control-rbac) • [Getting Started](#-getting-started) • [API Documentation](#-api-endpoints)
+[Features](#-key-features) • [Workflow Architecture](#-end-to-end-workflow-architecture) • [Generic Client Entity](#-generic-client-entity-architecture) • [RBAC & Permissions](#-role-based-access-control-rbac) • [Presentation](#-executive-presentation) • [Getting Started](#-getting-started)
 
 </div>
 
@@ -59,12 +59,48 @@ ATTENDIQ functions as **one controlled workflow** connecting hardware, validatio
 
 ---
 
+## 🏛️ Generic Client Entity Architecture
+
+Rather than hard-coding to "Student", ATTENDIQ uses a universal **`Client` entity**, making the software reusable across **Colleges/Schools, Hostels/Hotels, Monthly Messes, Gyms, Coworking Spaces, and Enterprise Organizations**.
+
+```
+                           ┌───────────────────────────────┐
+                           │          CLIENT               │
+                           ├───────────────────────────────┤
+                           │  • id (PK)                    │
+                           │  • client_code (Client ID)    │
+                           │  • enrollment_id (Optional)   │
+                           │  • name                       │
+                           │  • mobile                     │
+                           │  • email                      │
+                           │  • address                    │
+                           │  • gender                     │
+                           │  • date_of_birth              │
+                           │  • photo_url                  │
+                           │  • biometric_user_id (HW ID)  │
+                           │  • client_type                │
+                           │  • status (active / inactive) │
+                           └───────────────┬───────────────┘
+                                           │
+          ┌────────────────────┬───────────┴───────────┬────────────────────┐
+          ▼                    ▼                       ▼                    ▼
+   🎓 Student          🏨 Hotel Resident     🍽️ Mess Customer      💼 Staff / Other
+```
+
+### Key Client Fields & Types:
+* **`client_code`**: Primary Client Identifier (e.g. `STU-2026-001`, `CLI-2026-005`).
+* **`enrollment_id`**: Institutional Enrollment or Admission ID (e.g. `ENR-99882`).
+* **`biometric_user_id`**: Physical Hardware User ID (e.g. `105`) mapped to biometric scanners.
+* **`client_type`**: `Student`, `Hotel Resident`, `Monthly Mess Customer`, `Staff`, `Other`.
+
+---
+
 ## ✨ Key Features (21 Connected Modules)
 
 | # | Module | What It Does |
 |---|--------|--------------|
 | **1** | 🔐 **Login & Role Management** | JWT authentication with dual RBAC roles (**Super Admin** vs **Staff Operator**). Self-registration assigns Staff role. |
-| **2** | 👤 **Client Management** | Comprehensive profile management with Biometric ID mapping (`biometric_user_id`), plans, mobile, and status. |
+| **2** | 👤 **Client Management** | Multi-industry profile management with `enrollment_id`, Biometric ID mapping (`biometric_user_id`), plans, mobile, and status. |
 | **3** | 👆 **Biometric Hardware Integration** | Pluggable integration layer supporting **ZKTeco**, **eSSL**, and **Generic HTTP Webhooks**. |
 | **4** | 🔄 **Automatic Attendance Sync** | Automated real-time punch ingestion, validation, and storage pipeline. |
 | **5** | ⚡ **Real-Time Live Feed** | Instant WebSocket ticker broadcasting attendance events to the dashboard without page reloads. |
@@ -96,7 +132,7 @@ ATTENDIQ strictly enforces permissions at both the **Backend API level (JWT)** a
 | Feature / Action | 🔐 Super Admin | ◈ Staff Operator |
 |------------------|:--------------:|:----------------:|
 | **Dashboard** | Full Business & Financial Intelligence | Operational Overview (Today's Punches & KPIs) |
-| **View Client Directory** | ✅ | ✅ (Search & Profile View) |
+| **View Client Directory** | ✅ | ✅ (Search by Code, Enrollment ID, Mobile) |
 | **Add / Edit Client** | ✅ | ❌ Restricted (403 Forbidden) |
 | **Deactivate / Delete Client** | ✅ | ❌ Restricted (403 Forbidden) |
 | **View Attendance Logs** | ✅ | ✅ |
@@ -110,6 +146,14 @@ ATTENDIQ strictly enforces permissions at both the **Backend API level (JWT)** a
 | **Attendance Rules & Settings** | ✅ Edit Rules | ❌ Restricted |
 | **Audit Logs** | ✅ View Full Trail | ❌ Restricted |
 | **Self-Registration (`/register`)**| ❌ N/A (Seeded Single Admin) | ✅ Automatically assigned `staff` role |
+
+---
+
+## 📊 Executive Presentation
+
+For a complete 12-slide executive & technical slide deck covering business problem, market gap, financial settlement equations, and validation pipeline flowcharts, view:
+
+👉 **[`PRESENTATION.md`](file:///c:/Users/polam/Desktop/Biometric%20Attendance%20&%20Management%20System/PRESENTATION.md)**
 
 ---
 
@@ -220,7 +264,7 @@ Biometric Attendance & Management System/
 │   │   │   └── security.py             # JWT token generation & RBAC guards
 │   │   ├── models/                     # SQLAlchemy Models
 │   │   │   ├── user.py                 # System users & roles
-│   │   │   ├── client.py               # Students / Mess / Hotel Clients
+│   │   │   ├── client.py               # Universal Client Entity (enrollment_id, client_type)
 │   │   │   ├── plan.py                 # Membership plans
 │   │   │   ├── client_plan.py          # Active subscriptions
 │   │   │   ├── attendance.py          # Biometric attendance logs
@@ -229,7 +273,7 @@ Biometric Attendance & Management System/
 │   │   │   └── audit_log.py           # Immutable audit log
 │   │   ├── api/                        # REST Controllers
 │   │   │   ├── auth.py                # Login, Register, Me
-│   │   │   ├── clients.py             # Client CRUD & profile
+│   │   │   ├── clients.py             # Client CRUD, enrollment_id search & profile
 │   │   │   ├── plans.py               # Plan creation & assignment
 │   │   │   ├── attendance.py          # Webhooks, Simulator, Logs, Manual
 │   │   │   ├── payments.py            # Payments API
@@ -259,7 +303,7 @@ Biometric Attendance & Management System/
 │   │       ├── LoginPage.tsx           # Login & Staff Registration page
 │   │       ├── DashboardPage.tsx       # Super Admin Intelligence Dashboard
 │   │       ├── StaffDashboardPage.tsx  # Staff Operations Dashboard
-│   │       ├── ClientsPage.tsx         # Client Directory
+│   │       ├── ClientsPage.tsx         # Client Directory with Enrollment ID & Type filters
 │   │       ├── AttendancePage.tsx      # Attendance Logs
 │   │       ├── MealsPage.tsx           # Meal Consumption tracking
 │   │       ├── PlansPage.tsx           # Membership Plans
@@ -273,6 +317,7 @@ Biometric Attendance & Management System/
 │   ├── vite.config.ts                  # Vite proxy setup (:3000 → :8000)
 │   └── package.json
 │
+├── PRESENTATION.md                     # 12-Slide Executive Presentation Deck
 ├── start_system.bat                    # One-click Windows launcher
 └── README.md                           # Documentation
 ```
