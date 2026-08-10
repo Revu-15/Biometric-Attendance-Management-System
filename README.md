@@ -13,7 +13,7 @@
 
 An enterprise-grade, end-to-end **Biometric Attendance, Service Consumption & Monthly Settlement Engine**. Built with FastAPI, SQLAlchemy, WebSockets, and a modern React/TypeScript dashboard.
 
-[Features](#-key-features) • [Workflow Architecture](#-end-to-end-workflow-architecture) • [Generic Client Entity](#-generic-client-entity-architecture) • [RBAC & Permissions](#-role-based-access-control-rbac) • [Presentation](#-executive-presentation) • [Deployment Guide](file:///c:/Users/polam/Desktop/Biometric%20Attendance%20&%20Management%20System/DEPLOYMENT.md) • [Getting Started](#-getting-started)
+[🚀 Live Web App (Vercel)](https://biometric-attendance-management-sys-pi.vercel.app) • [⚙️ Live API Docs (Render)](https://biometric-attendance-management-system-kefe.onrender.com/docs) • [Deployment Guide](file:///c:/Users/polam/Desktop/Biometric%20Attendance%20&%20Management%20System/DEPLOYMENT.md)
 
 </div>
 
