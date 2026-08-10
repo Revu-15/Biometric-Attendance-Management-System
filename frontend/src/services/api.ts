@@ -45,6 +45,7 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
 export const api = {
   // Auth
   login: (data: any) => request<any>('/auth/login', { method: 'POST', body: JSON.stringify(data) }),
+  register: (data: any) => request<any>('/auth/register', { method: 'POST', body: JSON.stringify(data) }),
   getMe: () => request<any>('/auth/me'),
 
   // Dashboard Stats & Notifications
