@@ -220,61 +220,61 @@ uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
 ATTENDIQ Core System
 ├── .github/
 │   └── workflows/
-│       └── deploy.yml              # GitHub Pages CI/CD
-├── backend/                        # FastAPI Backend
+│       └── deploy.yml
+├── backend/
 │   ├── app/
-│   │   ├── main.py                 # Entry point & WebSockets
-│   │   ├── core/                   # Security & Database engine
-│   │   │   ├── config.py           # App settings
-│   │   │   ├── database.py         # SQLAlchemy engine
-│   │   │   └── security.py         # JWT & bcrypt auth
-│   │   ├── models/                 # ORM Data Models
-│   │   │   ├── user.py             # User & RBAC roles
-│   │   │   ├── client.py           # Client & Enrollment ID
-│   │   │   ├── plan.py             # Fee / Plan model
-│   │   │   ├── client_plan.py      # Subscriptions
-│   │   │   ├── attendance.py      # Punch logs
-│   │   │   ├── payment.py         # Payment transactions
-│   │   │   ├── device.py          # Biometric hardware
-│   │   │   ├── monthly_lock.py    # Settlement lock
-│   │   │   ├── system_setting.py  # Business rules
-│   │   │   ├── failed_punch_log.py# Recovery logs
-│   │   │   └── audit_log.py       # Security audit trail
-│   │   ├── schemas/                # Data Validation
-│   │   │   └── schemas.py         # Pydantic schemas
-│   │   ├── api/                    # REST API Controllers
-│   │   │   ├── auth.py            # Authentication
-│   │   │   ├── clients.py         # Client CRUD
-│   │   │   ├── plans.py           # Plans management
-│   │   │   ├── attendance.py      # Webhook ingestion
-│   │   │   ├── payments.py        # Payments API
-│   │   │   ├── reports.py         # Reports & Locking
-│   │   │   ├── devices.py         # Device registry
-│   │   │   └── audit_logs.py      # Audit trail
-│   │   ├── services/               # Business Logic Services
-│   │   │   ├── attendance_service.py # Punch validation engine
-│   │   │   ├── biometric_service.py  # Device adapters & ping
-│   │   │   ├── billing_service.py    # Monthly statements
-│   │   │   ├── report_service.py     # Analytics & alerts
-│   │   │   └── validation_service.py # Validation contracts
-│   │   ├── workers/                # Background Workers
-│   │   │   └── attendance_sync.py # Device recovery worker
-│   │   └── integrations/biometric/ # Hardware Adapters
-│   │       ├── base.py            # Adapter interface
-│   │       ├── generic.py         # Generic HTTP webhook
-│   │       └── zkteco.py          # ZKTeco / eSSL ADMS
-│   └── requirements.txt            # Python dependencies
-├── frontend/                       # React 18 + TypeScript UI
+│   │   ├── main.py
+│   │   ├── core/
+│   │   │   ├── config.py
+│   │   │   ├── database.py
+│   │   │   └── security.py
+│   │   ├── models/
+│   │   │   ├── user.py
+│   │   │   ├── client.py
+│   │   │   ├── plan.py
+│   │   │   ├── client_plan.py
+│   │   │   ├── attendance.py
+│   │   │   ├── payment.py
+│   │   │   ├── device.py
+│   │   │   ├── monthly_lock.py
+│   │   │   ├── system_setting.py
+│   │   │   ├── failed_punch_log.py
+│   │   │   └── audit_log.py
+│   │   ├── schemas/
+│   │   │   └── schemas.py
+│   │   ├── api/
+│   │   │   ├── auth.py
+│   │   │   ├── clients.py
+│   │   │   ├── plans.py
+│   │   │   ├── attendance.py
+│   │   │   ├── payments.py
+│   │   │   ├── reports.py
+│   │   │   ├── devices.py
+│   │   │   └── audit_logs.py
+│   │   ├── services/
+│   │   │   ├── attendance_service.py
+│   │   │   ├── biometric_service.py
+│   │   │   ├── billing_service.py
+│   │   │   ├── report_service.py
+│   │   │   └── validation_service.py
+│   │   ├── workers/
+│   │   │   └── attendance_sync.py
+│   │   └── integrations/biometric/
+│   │       ├── base.py
+│   │       ├── generic.py
+│   │       └── zkteco.py
+│   └── requirements.txt
+├── frontend/
 │   ├── src/
-│   │   ├── App.tsx                 # Main layout & router
-│   │   ├── services/api.ts         # REST API client
-│   │   ├── components/             # Reusable UI Components
-│   │   │   ├── Sidebar.tsx         # Dynamic RBAC menu
-│   │   │   ├── Navbar.tsx          # Top navbar
+│   │   ├── App.tsx
+│   │   ├── services/api.ts
+│   │   ├── components/
+│   │   │   ├── Sidebar.tsx
+│   │   │   ├── Navbar.tsx
 │   │   │   ├── ClientProfileModal.tsx
 │   │   │   ├── MonthlyStatementModal.tsx
 │   │   │   └── PunchSimulatorModal.tsx
-│   │   └── pages/                  # 12 Core Pages
+│   │   └── pages/
 │   │       ├── LoginPage.tsx
 │   │       ├── DashboardPage.tsx
 │   │       ├── StaffDashboardPage.tsx
@@ -289,15 +289,27 @@ ATTENDIQ Core System
 │   │       ├── RulesAndSettingsPage.tsx
 │   │       ├── AuditLogsPage.tsx
 │   │       └── AlertsPage.tsx
-│   ├── vercel.json                 # Vercel SPA routing
-│   ├── vite.config.ts              # Vite configuration
-│   └── package.json                # Frontend packages
-├── DEPLOYMENT.md                   # Deployment Guide
-├── PRESENTATION.md                 # Executive Slide Deck
-├── render.yaml                     # Render Blueprint
-├── vercel.json                     # Vercel Configuration
-└── start_system.bat                # Windows Launcher
+│   ├── vercel.json
+│   ├── vite.config.ts
+│   └── package.json
+├── DEPLOYMENT.md
+├── PRESENTATION.md
+├── render.yaml
+├── vercel.json
+└── start_system.bat
 ```
+
+### Module Breakdown
+
+| Directory / File | Layer | Description |
+|---|---|---|
+| `backend/app/api/` | REST Controllers | FastAPI endpoint handlers (Auth, Clients, Attendance, Payments, Reports) |
+| `backend/app/services/` | Business Logic | Validation engine, Biometric adapter dispatch, Monthly settlement, Analytics |
+| `backend/app/models/` | Data Models | SQLAlchemy ORM models (User, Client, Attendance, Payment, Device, MonthlyLock) |
+| `backend/app/integrations/` | Hardware Adapters | Pluggable biometric machine push log parsers (Generic HTTP & ZKTeco ADMS) |
+| `backend/app/workers/` | Background Worker | Async device sync recovery worker |
+| `frontend/src/pages/` | UI Pages | 12 Core Dashboard views (Super Admin & Staff Operator roles) |
+| `frontend/src/services/` | API Client | REST client with automatic server URL fallback |
 
 ---
 
