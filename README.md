@@ -214,20 +214,23 @@ pip install -r requirements.txt
 uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
 ```
 
-## 📂 Codebase Structure
+## 📁 Codebase Structure
 
 ```text
 ATTENDIQ Core System
 ├── .github/
 │   └── workflows/
 │       └── deploy.yml
+│
 ├── backend/
 │   ├── app/
 │   │   ├── main.py
+│   │
 │   │   ├── core/
 │   │   │   ├── config.py
 │   │   │   ├── database.py
 │   │   │   └── security.py
+│   │
 │   │   ├── models/
 │   │   │   ├── user.py
 │   │   │   ├── client.py
@@ -240,8 +243,10 @@ ATTENDIQ Core System
 │   │   │   ├── system_setting.py
 │   │   │   ├── failed_punch_log.py
 │   │   │   └── audit_log.py
+│   │
 │   │   ├── schemas/
 │   │   │   └── schemas.py
+│   │
 │   │   ├── api/
 │   │   │   ├── auth.py
 │   │   │   ├── clients.py
@@ -251,29 +256,39 @@ ATTENDIQ Core System
 │   │   │   ├── reports.py
 │   │   │   ├── devices.py
 │   │   │   └── audit_logs.py
+│   │
 │   │   ├── services/
 │   │   │   ├── attendance_service.py
 │   │   │   ├── biometric_service.py
 │   │   │   ├── billing_service.py
 │   │   │   ├── report_service.py
 │   │   │   └── validation_service.py
+│   │
 │   │   ├── workers/
 │   │   │   └── attendance_sync.py
-│   │   └── integrations/biometric/
-│   │       ├── base.py
-│   │       ├── generic.py
-│   │       └── zkteco.py
+│   │
+│   │   └── integrations/
+│   │       └── biometric/
+│   │           ├── base.py
+│   │           ├── generic.py
+│   │           └── zkteco.py
+│   │
 │   └── requirements.txt
+│
 ├── frontend/
 │   ├── src/
 │   │   ├── App.tsx
-│   │   ├── services/api.ts
+│   │
+│   │   ├── services/
+│   │   │   └── api.ts
+│   │
 │   │   ├── components/
 │   │   │   ├── Sidebar.tsx
 │   │   │   ├── Navbar.tsx
 │   │   │   ├── ClientProfileModal.tsx
 │   │   │   ├── MonthlyStatementModal.tsx
 │   │   │   └── PunchSimulatorModal.tsx
+│   │
 │   │   └── pages/
 │   │       ├── LoginPage.tsx
 │   │       ├── DashboardPage.tsx
@@ -289,27 +304,17 @@ ATTENDIQ Core System
 │   │       ├── RulesAndSettingsPage.tsx
 │   │       ├── AuditLogsPage.tsx
 │   │       └── AlertsPage.tsx
+│   │
 │   ├── vercel.json
 │   ├── vite.config.ts
 │   └── package.json
+│
 ├── DEPLOYMENT.md
 ├── PRESENTATION.md
 ├── render.yaml
 ├── vercel.json
 └── start_system.bat
 ```
-
-### Module Breakdown
-
-| Directory / File | Layer | Description |
-|---|---|---|
-| `backend/app/api/` | REST Controllers | FastAPI endpoint handlers (Auth, Clients, Attendance, Payments, Reports) |
-| `backend/app/services/` | Business Logic | Validation engine, Biometric adapter dispatch, Monthly settlement, Analytics |
-| `backend/app/models/` | Data Models | SQLAlchemy ORM models (User, Client, Attendance, Payment, Device, MonthlyLock) |
-| `backend/app/integrations/` | Hardware Adapters | Pluggable biometric machine push log parsers (Generic HTTP & ZKTeco ADMS) |
-| `backend/app/workers/` | Background Worker | Async device sync recovery worker |
-| `frontend/src/pages/` | UI Pages | 12 Core Dashboard views (Super Admin & Staff Operator roles) |
-| `frontend/src/services/` | API Client | REST client with automatic server URL fallback |
 
 ---
 
