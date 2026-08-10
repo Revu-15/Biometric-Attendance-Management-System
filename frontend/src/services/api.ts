@@ -1,4 +1,18 @@
-const API_BASE = '/api/v1';
+const getApiBase = (): string => {
+  const customUrl = localStorage.getItem('bio_api_server_url');
+  if (customUrl) {
+    const trimmed = customUrl.trim().replace(/\/+$/, '');
+    return trimmed.endsWith('/api/v1') ? trimmed : `${trimmed}/api/v1`;
+  }
+  const envUrl = (import.meta as any).env?.VITE_API_BASE;
+  if (envUrl) return envUrl;
+
+  // On GitHub Pages, if no server URL configured, fallback to http://127.0.0.1:8000/api/v1
+  if (typeof window !== 'undefined' && window.location.hostname.includes('github.io')) {
+    return 'http://127.0.0.1:8000/api/v1';
+  }
+  return '/api/v1';
+};
 
 export function getAuthToken(): string | null {
   return localStorage.getItem('bio_auth_token');
@@ -25,7 +39,7 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
     headers['Authorization'] = `Bearer ${token}`;
   }
 
-  const res = await fetch(`${API_BASE}${endpoint}`, {
+  const res = await fetch(`${getApiBase()}${endpoint}`, {
     ...options,
     headers,
   });

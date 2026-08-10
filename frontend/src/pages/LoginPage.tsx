@@ -22,6 +22,17 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [activeRole, setActiveRole] = useState<'admin' | 'staff' | null>(null);
+  const [serverUrl, setServerUrl] = useState<string>(localStorage.getItem('bio_api_server_url') || 'http://127.0.0.1:8000');
+  const [showServerConfig, setShowServerConfig] = useState<boolean>(false);
+
+  const saveServerUrl = (url: string) => {
+    setServerUrl(url);
+    if (url.trim()) {
+      localStorage.setItem('bio_api_server_url', url.trim());
+    } else {
+      localStorage.removeItem('bio_api_server_url');
+    }
+  };
 
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -386,9 +397,33 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
           )}
 
           <div style={{ marginTop: '1.25rem', padding: '0.75rem', borderRadius: '10px', background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border-color)' }}>
-            <p style={{ fontSize: '0.67rem', color: 'var(--text-muted)', textAlign: 'center', lineHeight: 1.5 }}>
-              🔐 Role is enforced server-side via JWT. Backend guarantees single Super Admin control.
-            </p>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontSize: '0.67rem', color: 'var(--text-muted)' }}>
+                ⚙️ Backend Server: <strong style={{ color: '#06B6D4' }}>{serverUrl}</strong>
+              </span>
+              <button
+                type="button"
+                onClick={() => setShowServerConfig(!showServerConfig)}
+                style={{ background: 'none', border: 'none', color: '#06B6D4', fontSize: '0.67rem', cursor: 'pointer', textDecoration: 'underline' }}>
+                {showServerConfig ? 'Close' : 'Change URL'}
+              </button>
+            </div>
+
+            {showServerConfig && (
+              <div style={{ marginTop: '8px' }}>
+                <input
+                  type="text"
+                  className="input-field"
+                  style={{ fontSize: '0.75rem', padding: '0.4rem 0.6rem' }}
+                  placeholder="e.g. http://127.0.0.1:8000 or https://api.onrender.com"
+                  value={serverUrl}
+                  onChange={(e) => saveServerUrl(e.target.value)}
+                />
+                <span style={{ fontSize: '0.63rem', color: 'var(--text-muted)', display: 'block', marginTop: '4px' }}>
+                  If hosted on GitHub Pages, point this to your running local or cloud FastAPI backend.
+                </span>
+              </div>
+            )}
           </div>
         </div>
 
