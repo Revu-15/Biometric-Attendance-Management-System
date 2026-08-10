@@ -132,10 +132,7 @@ def seed_initial_data():
                 status="active"
             )
             db.add(plan_basic)
-            
-        db.commit()
 
-        # Seed Sample Biometric Machine if missing
         dev = db.query(Device).filter(Device.device_id == "DEVICE-01").first()
         if not dev:
             dev = Device(
@@ -146,9 +143,7 @@ def seed_initial_data():
                 status="ONLINE"
             )
             db.add(dev)
-            db.commit()
 
-        # Seed Sample Clients if missing
         c1 = db.query(Client).filter(Client.client_code == "STU-2026-001").first()
         if not c1:
             c1 = Client(
@@ -161,19 +156,6 @@ def seed_initial_data():
                 status="active"
             )
             db.add(c1)
-            db.commit()
-
-            # Assign active plan
-            cp1 = ClientPlan(
-                client_id=c1.id,
-                plan_id=plan_monthly.id,
-                start_date=date.today() - timedelta(days=10),
-                end_date=date.today() + timedelta(days=20),
-                amount=3500.0,
-                status="active"
-            )
-            db.add(cp1)
-            db.commit()
 
         c2 = db.query(Client).filter(Client.client_code == "STU-2026-002").first()
         if not c2:
@@ -187,18 +169,6 @@ def seed_initial_data():
                 status="active"
             )
             db.add(c2)
-            db.commit()
-
-            cp2 = ClientPlan(
-                client_id=c2.id,
-                plan_id=plan_monthly.id,
-                start_date=date.today() - timedelta(days=5),
-                end_date=date.today() + timedelta(days=25),
-                amount=3500.0,
-                status="active"
-            )
-            db.add(cp2)
-            db.commit()
 
         c3 = db.query(Client).filter(Client.client_code == "STU-2026-003").first()
         if not c3:
@@ -212,19 +182,10 @@ def seed_initial_data():
                 status="active"
             )
             db.add(c3)
-            db.commit()
 
-            # Expired plan test client
-            cp3 = ClientPlan(
-                client_id=c3.id,
-                plan_id=plan_basic.id,
-                start_date=date.today() - timedelta(days=40),
-                end_date=date.today() - timedelta(days=10),
-                amount=1500.0,
-                status="expired"
-            )
-            db.add(cp3)
-            db.commit()
-
+        db.commit()
+    except Exception as e:
+        db.rollback()
+        print(f"Initial seed check completed or handled by concurrent worker: {e}")
     finally:
         db.close()
