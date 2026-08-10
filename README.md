@@ -1,254 +1,293 @@
-# BioSync — Biometric Attendance & Management System
+# ATTENDIQ — Biometric Attendance & Monthly Settlement System
 
 <div align="center">
 
-![BioSync Banner](https://img.shields.io/badge/BioSync-Biometric%20Attendance%20System-06B6D4?style=for-the-badge&logo=fingerprint&logoColor=white)
+![ATTENDIQ Banner](https://img.shields.io/badge/ATTENDIQ-Biometric%20Attendance%20%26%20Settlement-06B6D4?style=for-the-badge&logo=fingerprint&logoColor=white)
 
 [![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=flat-square&logo=python&logoColor=white)](https://python.org)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.104+-009688?style=flat-square&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
 [![React](https://img.shields.io/badge/React-18-61DAFB?style=flat-square&logo=react&logoColor=black)](https://reactjs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 [![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-2.0-D71F00?style=flat-square&logo=sqlalchemy&logoColor=white)](https://sqlalchemy.org)
+[![License](https://img.shields.io/badge/License-MIT-green.svg?style=flat-square)](LICENSE)
 
-A production-grade, end-to-end **Biometric Attendance & Client Management System** featuring real-time punch processing, automatic validation, billing, monthly settlement, and a premium dark-mode React dashboard.
+An enterprise-grade, end-to-end **Biometric Attendance, Service Consumption & Monthly Settlement Engine**. Built with FastAPI, SQLAlchemy, WebSockets, and a modern React/TypeScript dashboard.
+
+[Features](#-key-features) • [Workflow Architecture](#-end-to-end-workflow-architecture) • [RBAC & Permissions](#-role-based-access-control-rbac) • [Getting Started](#-getting-started) • [API Documentation](#-api-endpoints)
 
 </div>
 
 ---
 
-## 🎯 System Architecture
+## 🎯 End-to-End Workflow Architecture
+
+ATTENDIQ functions as **one controlled workflow** connecting hardware, validation logic, real-time telemetry, finance, and monthly closing:
 
 ```
-┌─────────────────────┐
-│  Biometric Machine  │   ZKTeco / eSSL / Generic HTTP
-│   Thumb / Finger    │
-└──────────┬──────────┘
-           │  HTTP Webhook / API Push
-           ▼
-┌─────────────────────────────────────────────────────┐
-│              FastAPI Backend (Port 8000)             │
-│                                                      │
-│  • Webhook Receiver  →  Adapter Layer (ZKTeco/HTTP)  │
-│  • Biometric ID      →  Client Identification        │
-│  • Validation Engine →  Duplicate / Plan / Status    │
-│  • WebSocket Broadcast → Real-Time Dashboard Feed    │
-│  • REST APIs         →  Admin Panel Operations       │
-└──────────────────────────┬──────────────────────────┘
-                           │
-                    SQLite (dev) / PostgreSQL (prod)
-                           │
-┌──────────────────────────▼──────────────────────────┐
-│           React Dashboard (Port 3000 / 5173)         │
-│                                                      │
-│  Live Dashboard • Clients • Attendance • Payments    │
-│  Reports • Devices • Settings • Audit Logs           │
-└─────────────────────────────────────────────────────┘
+                           ┌─────────────────────────┐
+                           │    Biometric Machine    │  ZKTeco / eSSL / Generic HTTP
+                           │   Fingerprint / Thumb   │
+                           └────────────┬────────────┘
+                                        │ HTTP Webhook / Push API
+                                        ▼
+                           ┌─────────────────────────┐
+                           │    Integration Layer    │  Device Authentication & Adapters
+                           └────────────┬────────────┘
+                                        ▼
+                           ┌─────────────────────────┐
+                           │    Validation Engine    │  Device Auth → Client ID → Plan Active
+                           └────────────┬────────────┘  → Duplicate Check → Time Rules
+                                        ▼
+                           ┌─────────────────────────┐
+                           │    Attendance Engine    │  Database Commit + Source Tagging
+                           └────────────┬────────────┘
+                                        ├──────────────────────────┐
+                                        ▼                          ▼
+                           ┌─────────────────────────┐  ┌─────────────────────────┐
+                           │ WebSocket Broadcast Feed│  │ Meal/Service Processing │
+                           │ (Real-time Dashboard)   │  │ (Breakfast/Lunch/Dinner)│
+                           └─────────────────────────┘  └────────────┬────────────┘
+                                                                   ▼
+                                                        ┌─────────────────────────┐
+                                                        │ Payments & Settlement   │
+                                                        └────────────┬────────────┘
+                                                                   ▼
+                                                        ┌─────────────────────────┐
+                                                        │ Monthly Review & Lock   │
+                                                        └─────────────────────────┘
 ```
 
 ---
 
-## ✨ Features (21 Modules)
+## ✨ Key Features (21 Connected Modules)
 
-| # | Feature | Description |
-|---|---------|-------------|
-| 1 | 🔐 **Login & Role Management** | JWT-based auth, Admin / Staff RBAC, password management |
-| 2 | 👤 **Client Management** | Add, edit, deactivate, search, full profile with photo |
-| 3 | 👆 **Biometric Integration** | ZKTeco, eSSL, Generic HTTP webhook adapters |
-| 4 | 🔄 **Automatic Attendance Sync** | Webhook → Validate → Record pipeline |
-| 5 | ⚡ **Real-Time Attendance** | WebSocket live feed on the dashboard |
-| 6 | 📋 **Attendance Management** | Present / Absent / Late / Leave / Manual correction |
-| 7 | 🔍 **Attendance Validation** | Duplicate detection, unknown ID, plan expiry checks |
-| 8 | 📅 **Daily & Monthly Records** | Per-client daily logs + monthly rollup with % attendance |
-| 9 | 📐 **Attendance Rules** | Late threshold, duplicate window, working days, holidays |
-| 10 | 💳 **Plan / Membership** | Create plans, assign, track expiry, renewal, meal limits |
-| 11 | 💰 **Payment Management** | Record payments, pending/paid tracking, history |
-| 12 | 📊 **Monthly Settlement** | Attendance + plan fee + payments = final monthly statement |
-| 13 | 🖥️ **Admin Dashboard** | Live stats, weekly trend chart, alerts, recent punches |
-| 14 | 📄 **Reports & Export** | Monthly statements, printable invoices |
-| 15 | 🔎 **Search & Filters** | Filter by name, ID, biometric ID, date, plan, status |
-| 16 | 🔔 **Alerts & Notifications** | Plan expiry, overdue payments, low attendance alerts |
-| 17 | 📡 **Device Management** | Add devices, adapter type, ONLINE/OFFLINE monitoring |
-| 18 | 🔁 **Error & Sync Recovery** | Failed punch log, retry tracking, offline sync |
-| 19 | 📝 **Audit Logs** | Full trail of who changed what, when, and why |
-| 20 | 🔒 **Security & RBAC** | JWT, bcrypt passwords, role-gated UI, secure endpoints |
-| 21 | 🗝️ **Monthly Lock & Approval** | Admin reviews → approves → locks month from edits |
-
----
-
-## 🛠️ Tech Stack
-
-| Layer | Technology |
-|-------|-----------|
-| **Backend Framework** | FastAPI (Python 3.10+) |
-| **ORM & Database** | SQLAlchemy 2.0 + SQLite (dev) / PostgreSQL (prod) |
-| **Authentication** | JWT (python-jose) + bcrypt (passlib) |
-| **Real-Time** | WebSockets (native FastAPI) |
-| **Frontend Framework** | React 18 + TypeScript + Vite |
-| **Styling** | Vanilla CSS with glassmorphism dark mode |
-| **Biometric Adapters** | ZKTeco, eSSL, Generic HTTP (extensible) |
+| # | Module | What It Does |
+|---|--------|--------------|
+| **1** | 🔐 **Login & Role Management** | JWT authentication with dual RBAC roles (**Super Admin** vs **Staff Operator**). Self-registration assigns Staff role. |
+| **2** | 👤 **Client Management** | Comprehensive profile management with Biometric ID mapping (`biometric_user_id`), plans, mobile, and status. |
+| **3** | 👆 **Biometric Hardware Integration** | Pluggable integration layer supporting **ZKTeco**, **eSSL**, and **Generic HTTP Webhooks**. |
+| **4** | 🔄 **Automatic Attendance Sync** | Automated real-time punch ingestion, validation, and storage pipeline. |
+| **5** | ⚡ **Real-Time Live Feed** | Instant WebSocket ticker broadcasting attendance events to the dashboard without page reloads. |
+| **6** | 📋 **Attendance Management** | Comprehensive status tracking: `PRESENT`, `ABSENT`, `LATE`, `LEAVE`, and manual corrections with audit logging. |
+| **7** | 🛡️ **Validation Engine** | 6-stage validation: Device Auth → Client Lookup → Client Active → Plan Active → Duplicate Window → Rules. |
+| **8** | ⏱️ **Duplicate Punch Protection** | Configurable duplicate window (default: 5 mins) preventing multiple scans from generating duplicate attendance records. |
+| **9** | ⚙️ **Attendance Rules Engine** | Configurable late thresholds, working days, holidays, duplicate windows, and allowed time slots. |
+| **10** | 💳 **Plan & Subscription Engine** | Create plans with fee, validity days, and meal limits. Assign and track active vs expired plans. |
+| **11** | 💰 **Payment Management** | Track payments (UPI, Cash, Bank Transfer), pending balances, and transaction history. |
+| **12** | 🍽️ **Meal & Service Consumption** | Separate tracking for `BREAKFAST`, `LUNCH`, and `DINNER` meal scans connected to plan meal limits. |
+| **13** | 📊 **Monthly Settlement Engine** | Automated statement generation calculating plan fees + meal consumption + payments = final balance. |
+| **14** | 🔒 **Monthly Lock & Approval** | Admin month-end review, approval, and read-only locking to prevent historical data tampering. |
+| **15** | 📝 **Audit Trail & Logging** | Immutable security trail tracking *Who*, *What*, *When*, *Old Value*, and *New Value* for system changes. |
+| **16** | 🖥️ **Device Monitoring** | Heartbeat monitoring, `ONLINE`/`OFFLINE` status tracking, and device registration. |
+| **17** | 🔁 **Error & Sync Recovery** | Failed punch logging, retry queues, and automatic sync recovery for offline devices. |
+| **18** | 🔔 **Alerts & Notifications** | System warnings for expiring plans, offline devices, overdue payments, and duplicate punch anomalies. |
+| **19** | 📈 **Analytics & Forecasting** | Client attendance % rankings, punch distribution, 7-day rolling average forecasts, and revenue projections. |
+| **20** | 🚨 **Anomaly Detection** | Automatic flag generation for suspicious duplicate punch patterns or unauthorized biometric IDs. |
+| **21** | 📄 **Reports & PDF/Excel Export** | Exportable daily/monthly attendance summaries, individual client statements, and financial reports. |
 
 ---
 
-## 🚀 Quick Start
+## 🔐 Role-Based Access Control (RBAC)
+
+ATTENDIQ strictly enforces permissions at both the **Backend API level (JWT)** and **Frontend UI level**.
+
+### Permission Comparison Matrix
+
+| Feature / Action | 🔐 Super Admin | ◈ Staff Operator |
+|------------------|:--------------:|:----------------:|
+| **Dashboard** | Full Business & Financial Intelligence | Operational Overview (Today's Punches & KPIs) |
+| **View Client Directory** | ✅ | ✅ (Search & Profile View) |
+| **Add / Edit Client** | ✅ | ❌ Restricted (403 Forbidden) |
+| **Deactivate / Delete Client** | ✅ | ❌ Restricted (403 Forbidden) |
+| **View Attendance Logs** | ✅ | ✅ |
+| **Manual Attendance Entry** | ✅ | ✅ (If Authorized) |
+| **Meal Consumption Tracking** | ✅ | ✅ |
+| **Record Payments** | ✅ | ✅ |
+| **Plans & Membership Setup** | ✅ Create / Edit / Assign | ❌ View Only |
+| **Monthly Settlement Statements**| ✅ Full Access & Invoices | ❌ View Only |
+| **Monthly Lock / Unlock** | ✅ Lock / Unlock Month | ❌ Restricted |
+| **Biometric Devices & Config** | ✅ Add / Configure | ❌ Restricted |
+| **Attendance Rules & Settings** | ✅ Edit Rules | ❌ Restricted |
+| **Audit Logs** | ✅ View Full Trail | ❌ Restricted |
+| **Self-Registration (`/register`)**| ❌ N/A (Seeded Single Admin) | ✅ Automatically assigned `staff` role |
+
+---
+
+## 🚀 Getting Started
 
 ### Prerequisites
-- Python 3.10+
-- Node.js 18+
-- pip
+- **Python 3.10+**
+- **Node.js 18+** & `npm`
+
+---
 
 ### Option 1 — One-Click Launch (Windows)
-```batch
-# Double-click or run:
-start_system.bat
+
+Simply double-click [`start_system.bat`](file:///c:/Users/polam/Desktop/Biometric%20Attendance%20&%20Management%20System/start_system.bat) or run in PowerShell:
+```powershell
+.\start_system.bat
 ```
-This starts both the backend API (port 8000) and React dashboard (port 3000).
+This automatically starts:
+- **FastAPI Backend**: `http://127.0.0.1:8000` (with `--reload`)
+- **React Frontend**: `http://localhost:3000`
+
+---
 
 ### Option 2 — Manual Setup
 
-**Backend:**
+#### 1. Backend Setup
 ```bash
 cd backend
+
+# Create virtual environment (optional)
+python -m venv venv
+venv\Scripts\activate  # Windows: venv\Scripts\activate
+
+# Install dependencies
 pip install -r requirements.txt
-uvicorn app.main:app --reload --port 8000
+
+# Launch FastAPI with auto-reload
+uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
 ```
 
-**Frontend:**
+#### 2. Frontend Setup
 ```bash
 cd frontend
+
+# Install Node modules
 npm install
+
+# Start Vite dev server
 npm run dev
 ```
 
-### Access
-| URL | Description |
-|-----|-------------|
-| http://localhost:3000 | React Admin Dashboard |
-| http://127.0.0.1:8000/docs | FastAPI Swagger API Docs |
-| http://127.0.0.1:8000/redoc | ReDoc API Reference |
+---
+
+## 🔑 Credentials & Access URLs
+
+| Portal / Service | URL | Default Credentials / Role |
+|------------------|-----|----------------------------|
+| 🖥️ **Web Dashboard** | **http://localhost:3000** | — |
+| 🔑 **Super Admin Login** | http://localhost:3000 | `admin@system.com` / `admin123` |
+| 🔑 **Staff Operator Login** | http://localhost:3000 | `staff@system.com` / `staff123` |
+| 📝 **Create Staff Account** | http://localhost:3000 | Click **Create Account** tab |
+| 📖 **FastAPI Swagger Docs** | **http://127.0.0.1:8000/docs** | Interactive API testing |
+| 📑 **ReDoc Reference** | http://127.0.0.1:8000/redoc | Clean API specification |
 
 ---
 
-## 🔑 Default Credentials
+## 🔗 Biometric Machine Webhook Integration
 
-| Role | Email | Password |
-|------|-------|----------|
-| **Super Admin** | `admin@system.com` | `admin123` |
-| **Operator Staff** | `staff@system.com` | `staff123` |
+To connect any biometric machine (ZKTeco, eSSL, Hikvision, or Generic HTTP), configure the hardware to POST attendance logs to:
 
-> ⚠️ Change these immediately in any production deployment.
-
----
-
-## 📁 Project Structure
-
-```
-Biometric Attendance & Management System/
-│
-├── backend/                        # FastAPI Python Backend
-│   ├── requirements.txt
-│   └── app/
-│       ├── main.py                 # App entry, WebSocket manager, DB seed
-│       ├── core/
-│       │   ├── config.py           # Settings (JWT secret, DB URL, rules)
-│       │   ├── database.py         # SQLAlchemy engine + session
-│       │   └── security.py         # JWT auth, password hashing
-│       ├── models/                 # SQLAlchemy ORM models
-│       │   ├── user.py
-│       │   ├── client.py
-│       │   ├── plan.py
-│       │   ├── client_plan.py
-│       │   ├── attendance.py
-│       │   ├── payment.py
-│       │   ├── device.py
-│       │   └── audit_log.py
-│       ├── schemas/
-│       │   └── schemas.py          # Pydantic request/response schemas
-│       ├── api/                    # Route handlers
-│       │   ├── auth.py
-│       │   ├── clients.py
-│       │   ├── plans.py
-│       │   ├── attendance.py       # Webhook + Simulator + Manual + Logs
-│       │   ├── payments.py
-│       │   ├── reports.py          # Dashboard stats, monthly statement, locks
-│       │   ├── devices.py
-│       │   └── audit_logs.py
-│       ├── services/
-│       │   └── validation_service.py  # Core punch validation engine
-│       └── integrations/
-│           └── biometric/
-│               ├── base.py         # Abstract adapter interface
-│               ├── generic.py      # Generic HTTP adapter
-│               └── zkteco.py       # ZKTeco adapter
-│
-├── frontend/                       # React + TypeScript + Vite Dashboard
-│   ├── index.html
-│   ├── vite.config.ts              # Dev proxy → backend :8000
-│   ├── tsconfig.json
-│   └── src/
-│       ├── App.tsx                 # Root with auth, routing, WebSocket
-│       ├── main.tsx
-│       ├── types/index.ts          # All TypeScript interfaces
-│       ├── services/api.ts         # Typed API client
-│       ├── styles/index.css        # Design system (dark, glassmorphism)
-│       ├── pages/
-│       │   ├── LoginPage.tsx
-│       │   ├── DashboardPage.tsx
-│       │   ├── ClientsPage.tsx
-│       │   ├── AttendancePage.tsx
-│       │   ├── PlansPage.tsx
-│       │   ├── PaymentsPage.tsx
-│       │   ├── ReportsPage.tsx
-│       │   ├── DevicesPage.tsx
-│       │   ├── RulesAndSettingsPage.tsx
-│       │   └── AuditLogsPage.tsx
-│       └── components/
-│           ├── Sidebar.tsx
-│           ├── Navbar.tsx
-│           ├── ClientProfileModal.tsx
-│           ├── MonthlyStatementModal.tsx
-│           └── PunchSimulatorModal.tsx
-│
-└── start_system.bat                # One-click Windows launcher
+```http
+POST http://<YOUR_SERVER_IP>:8000/api/v1/attendance/webhook
+Content-Type: application/json
 ```
 
----
-
-## 🔗 Biometric Webhook API
-
-To integrate any biometric device, POST punch events to:
-
-```
-POST http://your-server:8000/api/v1/attendance/webhook
-```
-
-**Generic payload:**
+### 1. Generic HTTP Payload
 ```json
 {
   "device_id": "DEVICE-01",
   "biometric_user_id": "105",
   "punch_type": "IN",
-  "timestamp": "2026-08-10T14:30:00Z"
+  "timestamp": "2026-08-10T08:32:14Z"
 }
 ```
 
-**ZKTeco payload (auto-detected):**
+### 2. ZKTeco ADMS / Push Payload (Auto-Detected)
 ```json
 {
   "SN": "DEVICE-01",
   "PIN": "105",
   "Verify": 1,
-  "DateTime": "2026-08-10 14:30:00"
+  "DateTime": "2026-08-10 08:32:14"
 }
+```
+
+---
+
+## 📂 Codebase Structure
+
+```
+Biometric Attendance & Management System/
+├── backend/                            # FastAPI Backend Engine
+│   ├── app/
+│   │   ├── main.py                     # Entry point, WebSockets, DB seeding
+│   │   ├── core/
+│   │   │   ├── config.py               # Settings (JWT secret, DB, default rules)
+│   │   │   ├── database.py             # SQLAlchemy 2.0 engine & session
+│   │   │   └── security.py             # JWT token generation & RBAC guards
+│   │   ├── models/                     # SQLAlchemy Models
+│   │   │   ├── user.py                 # System users & roles
+│   │   │   ├── client.py               # Students / Mess / Hotel Clients
+│   │   │   ├── plan.py                 # Membership plans
+│   │   │   ├── client_plan.py          # Active subscriptions
+│   │   │   ├── attendance.py          # Biometric attendance logs
+│   │   │   ├── payment.py             # Transactions & payments
+│   │   │   ├── device.py              # Biometric hardware registry
+│   │   │   └── audit_log.py           # Immutable audit log
+│   │   ├── api/                        # REST Controllers
+│   │   │   ├── auth.py                # Login, Register, Me
+│   │   │   ├── clients.py             # Client CRUD & profile
+│   │   │   ├── plans.py               # Plan creation & assignment
+│   │   │   ├── attendance.py          # Webhooks, Simulator, Logs, Manual
+│   │   │   ├── payments.py            # Payments API
+│   │   │   ├── reports.py             # Dashboard stats, Monthly Statement, Locks
+│   │   │   ├── devices.py             # Device management
+│   │   │   └── audit_logs.py          # Security logs
+│   │   ├── services/
+│   │   │   └── validation_service.py  # 6-step attendance validation pipeline
+│   │   └── integrations/
+│   │       └── biometric/             # Pluggable device hardware adapters
+│   │           ├── base.py
+│   │           ├── generic.py
+│   │           └── zkteco.py
+│   └── requirements.txt
+│
+├── frontend/                           # React + TypeScript + Vite UI
+│   ├── src/
+│   │   ├── App.tsx                     # Main routing & dual RBAC container
+│   │   ├── services/api.ts             # Typed REST API client
+│   │   ├── components/
+│   │   │   ├── Sidebar.tsx             # Dynamic RBAC sidebar navigation
+│   │   │   ├── Navbar.tsx              # Top header bar
+│   │   │   ├── ClientProfileModal.tsx  # Client profile view
+│   │   │   ├── MonthlyStatementModal.tsx # Invoice & monthly settlement modal
+│   │   │   └── PunchSimulatorModal.tsx # Built-in biometric punch simulator
+│   │   └── pages/
+│   │       ├── LoginPage.tsx           # Login & Staff Registration page
+│   │       ├── DashboardPage.tsx       # Super Admin Intelligence Dashboard
+│   │       ├── StaffDashboardPage.tsx  # Staff Operations Dashboard
+│   │       ├── ClientsPage.tsx         # Client Directory
+│   │       ├── AttendancePage.tsx      # Attendance Logs
+│   │       ├── MealsPage.tsx           # Meal Consumption tracking
+│   │       ├── PlansPage.tsx           # Membership Plans
+│   │       ├── PaymentsPage.tsx        # Payments & Billing
+│   │       ├── ReportsPage.tsx         # Monthly Settlement Statements
+│   │       ├── AnalyticsPage.tsx       # Analytics & Intelligence
+│   │       ├── DevicesPage.tsx         # Biometric Hardware Manager
+│   │       ├── RulesAndSettingsPage.tsx# Attendance Rules & Settings
+│   │       ├── AuditLogsPage.tsx       # Audit Logs
+│   │       └── AlertsPage.tsx          # System Alerts
+│   ├── vite.config.ts                  # Vite proxy setup (:3000 → :8000)
+│   └── package.json
+│
+├── start_system.bat                    # One-click Windows launcher
+└── README.md                           # Documentation
 ```
 
 ---
 
 ## 📜 License
 
-MIT License — free for personal and commercial use.
+Distributed under the **MIT License**. See `LICENSE` for details.
 
 ---
 
 <div align="center">
-Built with ❤️ | FastAPI + React + SQLAlchemy
+
+**ATTENDIQ** · Enterprise Biometric Attendance & Settlement Engine  
+Built with ❤️ using FastAPI, React & TypeScript
+
 </div>
