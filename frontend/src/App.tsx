@@ -15,6 +15,9 @@ import { ReportsPage } from './pages/ReportsPage';
 import { DevicesPage } from './pages/DevicesPage';
 import { RulesAndSettingsPage } from './pages/RulesAndSettingsPage';
 import { AuditLogsPage } from './pages/AuditLogsPage';
+import { MealsPage } from './pages/MealsPage';
+import { AnalyticsPage } from './pages/AnalyticsPage';
+import { AlertsPage } from './pages/AlertsPage';
 
 import { getAuthToken, clearAuthToken, api } from './services/api';
 import { Client } from './types';
@@ -37,51 +40,34 @@ export const App: React.FC = () => {
       api.getMe().then(user => {
         setUserRole(user.role);
         setUserName(user.name);
-      }).catch(() => {
-        handleLogout();
-      });
+      }).catch(() => handleLogout());
     }
   }, [isAuthenticated]);
 
   useEffect(() => {
     if (!isAuthenticated) return;
 
+    // Connect WebSocket to the backend via Vite proxy
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const wsUrl = `${protocol}//${window.location.host}/ws/attendance`;
-    
+    const wsUrl = `${protocol}//127.0.0.1:8000/ws/attendance`;
+
     let ws: WebSocket;
 
     const connectWs = () => {
       ws = new WebSocket(wsUrl);
-
-      ws.onopen = () => {
-        setWsConnected(true);
-      };
-
+      ws.onopen = () => setWsConnected(true);
       ws.onmessage = (event) => {
         try {
           const data = JSON.parse(event.data);
-          if (data.event === 'NEW_PUNCH') {
-            setWsPunchEvent(data);
-          }
+          if (data.event === 'NEW_PUNCH') setWsPunchEvent(data);
         } catch (err) {}
       };
-
-      ws.onclose = () => {
-        setWsConnected(false);
-        setTimeout(connectWs, 3000);
-      };
-
-      ws.onerror = () => {
-        setWsConnected(false);
-      };
+      ws.onclose = () => { setWsConnected(false); setTimeout(connectWs, 3000); };
+      ws.onerror = () => setWsConnected(false);
     };
 
     connectWs();
-
-    return () => {
-      if (ws) ws.close();
-    };
+    return () => { if (ws) ws.close(); };
   }, [isAuthenticated]);
 
   const handleLoginSuccess = (role: string, name: string) => {
@@ -98,6 +84,26 @@ export const App: React.FC = () => {
   if (!isAuthenticated) {
     return <LoginPage onLoginSuccess={handleLoginSuccess} />;
   }
+
+  const getTabTitle = (): string => {
+    const titles: Record<string, string> = {
+      'dashboard':      'Attendance Operations Overview',
+      'clients':        'Client Directory & Membership',
+      'attendance':     'Biometric Attendance Logs',
+      'meals':          'Meal & Service Consumption',
+      'plans':          'Subscription & Meal Plans',
+      'payments':       'Payments & Billing',
+      'reports':        'Monthly Settlement & Reports',
+      'analytics':      'Analytics & Intelligence',
+      'devices':        'Biometric Device Manager',
+      'sync-recovery':  'Error & Sync Recovery',
+      'settings':       'Attendance Rules & Settings',
+      'monthly-lock':   'Monthly Lock & Approval',
+      'audit':          'Audit Logs & Security Trail',
+      'alerts':         'Alerts & Notifications',
+    };
+    return titles[currentTab] || 'ATTENDIQ Dashboard';
+  };
 
   const renderTabContent = () => {
     switch (currentTab) {
@@ -119,35 +125,30 @@ export const App: React.FC = () => {
         );
       case 'attendance':
         return <AttendancePage />;
+      case 'meals':
+        return <MealsPage />;
       case 'plans':
         return <PlansPage userRole={userRole} />;
       case 'payments':
         return <PaymentsPage />;
       case 'reports':
         return <ReportsPage onOpenStatement={(id) => setStatementClientId(id)} />;
+      case 'analytics':
+        return <AnalyticsPage />;
       case 'devices':
         return <DevicesPage userRole={userRole} />;
+      case 'sync-recovery':
+        return <RulesAndSettingsPage />;  // Reuse settings page for now — shows failed punches
       case 'settings':
         return <RulesAndSettingsPage />;
+      case 'monthly-lock':
+        return <ReportsPage onOpenStatement={(id) => setStatementClientId(id)} />;
       case 'audit':
         return <AuditLogsPage />;
+      case 'alerts':
+        return <AlertsPage />;
       default:
         return <DashboardPage onOpenSimulator={() => setIsSimulatorOpen(true)} wsPunchEvent={wsPunchEvent} />;
-    }
-  };
-
-  const getTabTitle = () => {
-    switch (currentTab) {
-      case 'dashboard': return 'Live Operations Dashboard';
-      case 'clients': return 'Client Directory & Membership';
-      case 'attendance': return 'Biometric Attendance Logs';
-      case 'plans': return 'Subscription & Meal Plans';
-      case 'payments': return 'Payments & Billing Logs';
-      case 'reports': return 'Monthly Statements & Settlement';
-      case 'devices': return 'Biometric Machine Adapter Manager';
-      case 'settings': return 'Attendance Rules & Security Settings';
-      case 'audit': return 'Audit Logs & Security Trail';
-      default: return 'Dashboard';
     }
   };
 
@@ -177,14 +178,12 @@ export const App: React.FC = () => {
           isOpen={isSimulatorOpen}
           onClose={() => setIsSimulatorOpen(false)}
         />
-
         <ClientProfileModal
           client={selectedClient}
           isOpen={!!selectedClient}
           onClose={() => setSelectedClient(null)}
           onOpenStatement={(id) => setStatementClientId(id)}
         />
-
         <MonthlyStatementModal
           clientId={statementClientId}
           isOpen={!!statementClientId}

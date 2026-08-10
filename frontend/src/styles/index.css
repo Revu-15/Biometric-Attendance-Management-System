@@ -70,22 +70,37 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .sidebar {
-  width: 260px;
-  background: #0D1322;
+  width: 272px;
+  background: #0B1120;
   border-right: 1px solid var(--border-color);
   display: flex;
   flex-direction: column;
-  padding: 1.5rem 1rem;
   position: fixed;
   height: 100vh;
   z-index: 40;
+  overflow: hidden;
+}
+
+.sidebar nav::-webkit-scrollbar {
+  width: 4px;
+}
+.sidebar nav::-webkit-scrollbar-track {
+  background: transparent;
+}
+.sidebar nav::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.08);
+  border-radius: 2px;
 }
 
 .main-content {
-  margin-left: 260px;
+  margin-left: 272px;
   flex: 1;
   padding: 2rem;
   min-height: 100vh;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
 /* Status Badges */
