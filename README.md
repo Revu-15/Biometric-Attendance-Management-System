@@ -362,36 +362,6 @@ Content-Type: application/json
 
 ---
 
-│   │   └── pages/                      # 12 Core Dashboard Modules
-│   │       ├── LoginPage.tsx           # Login, Staff Register & Server URL config
-│   │       ├── DashboardPage.tsx       # Super Admin Executive Dashboard
-│   │       ├── StaffDashboardPage.tsx  # Staff Operations Dashboard
-│   │       ├── ClientsPage.tsx         # Universal Client Directory (Enrollment ID & Type search)
-│   │       ├── AttendancePage.tsx      # Attendance Log Feed
-│   │       ├── MealsPage.tsx           # Service & Meal Consumption tracking
-│   │       ├── PlansPage.tsx           # Membership & Fee Plans
-│   │       ├── PaymentsPage.tsx        # Payment Ledger & Balances
-│   │       ├── ReportsPage.tsx         # Monthly Settlement Reports & Exports
-│   │       ├── AnalyticsPage.tsx       # System Analytics & Intelligence
-│   │       ├── DevicesPage.tsx         # Biometric Device Manager
-│   │       ├── RulesAndSettingsPage.tsx# Attendance Rules & Settings
-│   │       ├── AuditLogsPage.tsx       # Security Audit Logs
-│   │       └── AlertsPage.tsx          # Notifications & Warning Feed
-│   │
-│   ├── vercel.json                     # Vercel SPA routing configuration
-│   ├── vite.config.ts                  # Vite build configuration (base relative path & proxy)
-│   └── package.json                    # Frontend dependencies
-│
-├── DEPLOYMENT.md                       # Comprehensive Docker, VPS & Cloud Deployment Guide
-├── PRESENTATION.md                     # 12-Slide Executive & Technical Slide Deck
-├── render.yaml                         # 1-Click Render Cloud Blueprint
-├── vercel.json                         # Root Vercel SPA Deployment Configuration
-├── start_system.bat                    # One-click local launcher for Windows
-└── README.md                           # Master Project Documentation
-```
-
----
-
 ## 📜 License
 
 Distributed under the **MIT License**. See `LICENSE` for details.
