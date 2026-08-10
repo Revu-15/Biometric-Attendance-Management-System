@@ -218,102 +218,102 @@ uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
 
 ```text
 ATTENDIQ Core System
-├── .github/
-│   └── workflows/
-│       └── deploy.yml
-│
-├── backend/
-│   ├── app/
-│   │   ├── main.py
-│   │
-│   │   ├── core/
-│   │   │   ├── config.py
-│   │   │   ├── database.py
-│   │   │   └── security.py
-│   │
-│   │   ├── models/
-│   │   │   ├── user.py
-│   │   │   ├── client.py
-│   │   │   ├── plan.py
-│   │   │   ├── client_plan.py
-│   │   │   ├── attendance.py
-│   │   │   ├── payment.py
-│   │   │   ├── device.py
-│   │   │   ├── monthly_lock.py
-│   │   │   ├── system_setting.py
-│   │   │   ├── failed_punch_log.py
-│   │   │   └── audit_log.py
-│   │
-│   │   ├── schemas/
-│   │   │   └── schemas.py
-│   │
-│   │   ├── api/
-│   │   │   ├── auth.py
-│   │   │   ├── clients.py
-│   │   │   ├── plans.py
-│   │   │   ├── attendance.py
-│   │   │   ├── payments.py
-│   │   │   ├── reports.py
-│   │   │   ├── devices.py
-│   │   │   └── audit_logs.py
-│   │
-│   │   ├── services/
-│   │   │   ├── attendance_service.py
-│   │   │   ├── biometric_service.py
-│   │   │   ├── billing_service.py
-│   │   │   ├── report_service.py
-│   │   │   └── validation_service.py
-│   │
-│   │   ├── workers/
-│   │   │   └── attendance_sync.py
-│   │
-│   │   └── integrations/
-│   │       └── biometric/
-│   │           ├── base.py
-│   │           ├── generic.py
-│   │           └── zkteco.py
-│   │
-│   └── requirements.txt
-│
-├── frontend/
-│   ├── src/
-│   │   ├── App.tsx
-│   │
-│   │   ├── services/
-│   │   │   └── api.ts
-│   │
-│   │   ├── components/
-│   │   │   ├── Sidebar.tsx
-│   │   │   ├── Navbar.tsx
-│   │   │   ├── ClientProfileModal.tsx
-│   │   │   ├── MonthlyStatementModal.tsx
-│   │   │   └── PunchSimulatorModal.tsx
-│   │
-│   │   └── pages/
-│   │       ├── LoginPage.tsx
-│   │       ├── DashboardPage.tsx
-│   │       ├── StaffDashboardPage.tsx
-│   │       ├── ClientsPage.tsx
-│   │       ├── AttendancePage.tsx
-│   │       ├── MealsPage.tsx
-│   │       ├── PlansPage.tsx
-│   │       ├── PaymentsPage.tsx
-│   │       ├── ReportsPage.tsx
-│   │       ├── AnalyticsPage.tsx
-│   │       ├── DevicesPage.tsx
-│   │       ├── RulesAndSettingsPage.tsx
-│   │       ├── AuditLogsPage.tsx
-│   │       └── AlertsPage.tsx
-│   │
-│   ├── vercel.json
-│   ├── vite.config.ts
-│   └── package.json
-│
-├── DEPLOYMENT.md
-├── PRESENTATION.md
-├── render.yaml
-├── vercel.json
-└── start_system.bat
++-- .github/
+|   \-- workflows/
+|       \-- deploy.yml
+|
++-- backend/
+|   +-- app/
+|   |   +-- main.py
+|   |
+|   |   +-- core/
+|   |   |   +-- config.py
+|   |   |   +-- database.py
+|   |   |   \-- security.py
+|   |
+|   |   +-- models/
+|   |   |   +-- user.py
+|   |   |   +-- client.py
+|   |   |   +-- plan.py
+|   |   |   +-- client_plan.py
+|   |   |   +-- attendance.py
+|   |   |   +-- payment.py
+|   |   |   +-- device.py
+|   |   |   +-- monthly_lock.py
+|   |   |   +-- system_setting.py
+|   |   |   +-- failed_punch_log.py
+|   |   |   \-- audit_log.py
+|   |
+|   |   +-- schemas/
+|   |   |   \-- schemas.py
+|   |
+|   |   +-- api/
+|   |   |   +-- auth.py
+|   |   |   +-- clients.py
+|   |   |   +-- plans.py
+|   |   |   +-- attendance.py
+|   |   |   +-- payments.py
+|   |   |   +-- reports.py
+|   |   |   +-- devices.py
+|   |   |   \-- audit_logs.py
+|   |
+|   |   +-- services/
+|   |   |   +-- attendance_service.py
+|   |   |   +-- biometric_service.py
+|   |   |   +-- billing_service.py
+|   |   |   +-- report_service.py
+|   |   |   \-- validation_service.py
+|   |
+|   |   +-- workers/
+|   |   |   \-- attendance_sync.py
+|   |
+|   |   \-- integrations/
+|   |       \-- biometric/
+|   |           +-- base.py
+|   |           +-- generic.py
+|   |           \-- zkteco.py
+|   |
+|   \-- requirements.txt
+|
++-- frontend/
+|   +-- src/
+|   |   +-- App.tsx
+|   |
+|   |   +-- services/
+|   |   |   \-- api.ts
+|   |
+|   |   +-- components/
+|   |   |   +-- Sidebar.tsx
+|   |   |   +-- Navbar.tsx
+|   |   |   +-- ClientProfileModal.tsx
+|   |   |   +-- MonthlyStatementModal.tsx
+|   |   |   \-- PunchSimulatorModal.tsx
+|   |
+|   |   \-- pages/
+|   |       +-- LoginPage.tsx
+|   |       +-- DashboardPage.tsx
+|   |       +-- StaffDashboardPage.tsx
+|   |       +-- ClientsPage.tsx
+|   |       +-- AttendancePage.tsx
+|   |       +-- MealsPage.tsx
+|   |       +-- PlansPage.tsx
+|   |       +-- PaymentsPage.tsx
+|   |       +-- ReportsPage.tsx
+|   |       +-- AnalyticsPage.tsx
+|   |       +-- DevicesPage.tsx
+|   |       +-- RulesAndSettingsPage.tsx
+|   |       +-- AuditLogsPage.tsx
+|   |       \-- AlertsPage.tsx
+|   |
+|   +-- vercel.json
+|   +-- vite.config.ts
+|   \-- package.json
+|
++-- DEPLOYMENT.md
++-- PRESENTATION.md
++-- render.yaml
++-- vercel.json
+\-- start_system.bat
 ```
 
 ---
