@@ -71,7 +71,7 @@ def get_clients(
 def create_client(
     payload: ClientCreate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(require_super_admin)  # ← Super Admin only
 ):
     # Check duplicate client code or biometric ID
     existing_code = db.query(Client).filter(Client.client_code == payload.client_code).first()
@@ -182,7 +182,7 @@ def update_client(
     client_id: int,
     payload: ClientUpdate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(require_super_admin)  # ← Super Admin only
 ):
     client = db.query(Client).filter(Client.id == client_id).first()
     if not client:

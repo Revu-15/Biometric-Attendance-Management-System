@@ -56,3 +56,10 @@ def require_super_admin(current_user = Depends(get_current_user)):
             detail="Operation restricted to Super Admin role"
         )
     return current_user
+
+def require_any_staff(current_user = Depends(get_current_user)):
+    """Any authenticated user (both super_admin and staff) can access."""
+    return current_user
+
+def is_super_admin(user) -> bool:
+    return user.role == "super_admin"
