@@ -320,14 +320,17 @@ ATTENDIQ Core System
 
 ## 🔑 Credentials & Access URLs
 
-| Portal / Service | URL | Default Credentials / Role |
-|------------------|-----|----------------------------|
-| 🖥️ **Web Dashboard** | **http://localhost:3000** | — |
-| 🔑 **Super Admin Login** | http://localhost:3000 | `admin@system.com` / `admin123` |
-| 🔑 **Staff Operator Login** | http://localhost:3000 | `staff@system.com` / `staff123` |
-| 📝 **Create Staff Account** | http://localhost:3000 | Click **Create Account** tab |
-| 📖 **FastAPI Swagger Docs** | **http://127.0.0.1:8000/docs** | Interactive API testing |
-| 📑 **ReDoc Reference** | http://127.0.0.1:8000/redoc | Clean API specification |
+| Portal / Service | Hyperlink | Default Credentials / Purpose |
+|------------------|-----------|----------------------------|
+| 🚀 **Production Web App (Vercel)** | [biometric-attendance-management-sys-pi.vercel.app](https://biometric-attendance-management-sys-pi.vercel.app) | Live Cloud React App |
+| 🌐 **Production Web App (GitHub Pages)** | [revu-15.github.io/Biometric-Attendance-Management-System](https://revu-15.github.io/Biometric-Attendance-Management-System/) | GitHub Pages Cloud App |
+| ⚙️ **Production API (Render)** | [biometric-attendance-management-system-kefe.onrender.com](https://biometric-attendance-management-system-kefe.onrender.com) | Live FastAPI Backend Endpoint |
+| 📖 **Interactive Swagger Docs** | [biometric-attendance-management-system-kefe.onrender.com/docs](https://biometric-attendance-management-system-kefe.onrender.com/docs) | Interactive API Explorer |
+| 🔑 **Super Admin Login** | Any Web Dashboard URL | `admin@system.com` / `admin123` |
+| 🔑 **Staff Operator Login** | Any Web Dashboard URL | `staff@system.com` / `staff123` |
+| 📝 **Create Staff Account** | Any Web Dashboard URL | Click **Create Account** tab |
+| 🖥️ **Local Web App** | `http://localhost:3000` | Local React Dev Server |
+| 📖 **Local Swagger Docs** | `http://127.0.0.1:8000/docs` | Local API Docs |
 
 ---
 
