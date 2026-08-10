@@ -13,7 +13,7 @@
 
 An enterprise-grade, end-to-end **Biometric Attendance, Service Consumption & Monthly Settlement Engine**. Built with FastAPI, SQLAlchemy, WebSockets, and a modern React/TypeScript dashboard.
 
-[Features](#-key-features) • [Workflow Architecture](#-end-to-end-workflow-architecture) • [Generic Client Entity](#-generic-client-entity-architecture) • [RBAC & Permissions](#-role-based-access-control-rbac) • [Presentation](#-executive-presentation) • [Getting Started](#-getting-started)
+[Features](#-key-features) • [Workflow Architecture](#-end-to-end-workflow-architecture) • [Generic Client Entity](#-generic-client-entity-architecture) • [RBAC & Permissions](#-role-based-access-control-rbac) • [Presentation](#-executive-presentation) • [Deployment Guide](file:///c:/Users/polam/Desktop/Biometric%20Attendance%20&%20Management%20System/DEPLOYMENT.md) • [Getting Started](#-getting-started)
 
 </div>
 
