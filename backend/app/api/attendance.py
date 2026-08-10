@@ -9,9 +9,8 @@ from app.models.client import Client
 from app.models.audit_log import AuditLog
 from app.models.user import User
 from app.schemas.schemas import AttendanceOut, WebhookPunchRequest, ManualAttendanceRequest
-from app.integrations.biometric.generic import GenericHttpAdapter
-from app.integrations.biometric.zkteco import ZKTecoAdapter
-from app.services.validation_service import validate_and_record_punch
+from app.services.attendance_service import AttendanceService
+from app.services.biometric_service import BiometricService
 
 router = APIRouter(prefix="/attendance", tags=["Attendance & Validation Engine"])
 
@@ -32,35 +31,11 @@ def biometric_webhook(payload: Dict[str, Any] = Body(...), db: Session = Depends
     Biometric Integration Webhook Endpoint.
     Accepts push data from Biometric machines (ZKTeco, eSSL, or Generic HTTP adapter).
     """
-    # Detect adapter type from payload structure
-    if "PIN" in payload or "SN" in payload:
-        adapter = ZKTecoAdapter()
-    else:
-        adapter = GenericHttpAdapter()
-
-    event = adapter.parse_webhook_payload(payload)
+    event = BiometricService.parse_punch(payload)
     if not event.biometric_user_id:
         raise HTTPException(status_code=400, detail="Missing biometric_user_id in payload")
 
-    result = validate_and_record_punch(db, event)
-
-    # Format response for device
-    response_data = {
-        "success": result.is_valid,
-        "status": result.status,
-        "message": result.message,
-        "client": {
-            "id": result.client.client_code if result.client else None,
-            "name": result.client.name if result.client else "Unknown",
-            "biometric_user_id": event.biometric_user_id
-        } if result.client else None,
-        "attendance": {
-            "date": str(result.attendance.attendance_date),
-            "time": str(result.attendance.attendance_time),
-            "status": result.attendance.status,
-            "punch_type": result.attendance.punch_type
-        } if result.attendance else None
-    }
+    response_data = AttendanceService.process_webhook_punch(db, event)
 
     # Broadcast live event via WebSocket to Admin Panel
     broadcast_punch_event({

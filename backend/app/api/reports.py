@@ -23,113 +23,18 @@ from app.models.monthly_lock import MonthlyLock
 from app.models.user import User
 from app.models.audit_log import AuditLog
 
+from app.services.report_service import ReportService
+from app.services.billing_service import BillingService
+
 router = APIRouter(prefix="/reports", tags=["Reports, Rules & Administration"])
 
 @router.get("/dashboard-stats")
 def get_dashboard_stats(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    today = date.today()
+    return ReportService.get_dashboard_analytics(db)
 
-    total_clients = db.query(Client).count()
-    active_clients = db.query(Client).filter(Client.status == "active").count()
-
-    active_plans_count = db.query(ClientPlan).filter(
-        ClientPlan.status == "active",
-        ClientPlan.start_date <= today,
-        ClientPlan.end_date >= today
-    ).count()
-
-    todays_attendance_count = db.query(Attendance).filter(
-        Attendance.attendance_date == today,
-        Attendance.status.in_(["PRESENT", "LATE"])
-    ).count()
-
-    expiring_plans_count = db.query(ClientPlan).filter(
-        ClientPlan.status == "active",
-        ClientPlan.end_date >= today,
-        ClientPlan.end_date <= today + timedelta(days=7)
-    ).count()
-
-    # Weekly trend
-    weekly_trend = []
-    for i in range(6, -1, -1):
-        day_date = today - timedelta(days=i)
-        cnt = db.query(Attendance).filter(
-            Attendance.attendance_date == day_date,
-            Attendance.status.in_(["PRESENT", "LATE"])
-        ).count()
-        weekly_trend.append({
-            "date": day_date.strftime("%b %d"),
-            "count": cnt
-        })
-
-    recent_punches = db.query(Attendance).order_by(Attendance.created_at.desc()).limit(10).all()
-    punch_list = []
-    for p in recent_punches:
-        punch_list.append({
-            "id": p.id,
-            "time": p.attendance_time.strftime("%H:%M:%S") if p.attendance_time else "",
-            "client_name": p.client.name if p.client else "Unknown",
-            "client_code": p.client.client_code if p.client else "N/A",
-            "status": p.status,
-            "punch_type": p.punch_type,
-            "device_id": p.device_id
-        })
-
-    return {
-        "total_clients": total_clients,
-        "active_clients": active_clients,
-        "active_plans": active_plans_count,
-        "todays_attendance": todays_attendance_count,
-        "expiring_plans": expiring_plans_count,
-        "weekly_trend": weekly_trend,
-        "recent_punches": punch_list
-    }
-
-# Feature 16: Alerts & Notifications Feed
 @router.get("/notifications")
 def get_system_notifications(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    today = date.today()
-    notifications = []
-
-    # Device offline alerts
-    cutoff_time = datetime.now() - timedelta(minutes=15)
-    offline_devices = db.query(Device).filter(Device.last_seen < cutoff_time).all()
-    for dev in offline_devices:
-        notifications.append({
-            "id": f"dev-{dev.id}",
-            "type": "DEVICE_OFFLINE",
-            "title": f"Device {dev.name} Offline",
-            "message": f"Hardware scanner {dev.device_id} ({dev.location}) has not pinged since {dev.last_seen.strftime('%H:%M')}",
-            "severity": "danger"
-        })
-
-    # Expiring subscriptions within 3 days
-    expiring = db.query(ClientPlan).filter(
-        ClientPlan.status == "active",
-        ClientPlan.end_date >= today,
-        ClientPlan.end_date <= today + timedelta(days=3)
-    ).all()
-    for ep in expiring:
-        notifications.append({
-            "id": f"plan-{ep.id}",
-            "type": "PLAN_EXPIRING",
-            "title": f"Subscription Expiring Soon",
-            "message": f"Plan for {ep.client.name if ep.client else 'Client'} expires on {ep.end_date}",
-            "severity": "warning"
-        })
-
-    # Failed punch alerts
-    failed_cnt = db.query(FailedPunchLog).filter(FailedPunchLog.status == "PENDING").count()
-    if failed_cnt > 0:
-        notifications.append({
-            "id": "failed-punches",
-            "type": "FAILED_PUNCHES",
-            "title": "Pending Failed Punches",
-            "message": f"{failed_cnt} raw webhook punch event(s) require reprocessing in Sync Recovery",
-            "severity": "warning"
-        })
-
-    return notifications
+    return ReportService.get_system_notifications(db)
 
 # Feature 9: Settings & Rules Engine
 @router.get("/settings")
@@ -271,101 +176,10 @@ def get_monthly_statement(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    client = db.query(Client).filter(Client.id == client_id).first()
-    if not client:
-        raise HTTPException(status_code=404, detail="Client not found")
-
-    start_date = date(year, month, 1)
-    if month == 12:
-        end_date = date(year + 1, 1, 1) - timedelta(days=1)
-    else:
-        end_date = date(year, month + 1, 1) - timedelta(days=1)
-
-    total_days = (end_date - start_date).days + 1
-
-    attendances = db.query(Attendance).filter(
-        Attendance.client_id == client.id,
-        Attendance.attendance_date >= start_date,
-        Attendance.attendance_date <= end_date,
-        Attendance.status.in_(["PRESENT", "LATE"])
-    ).all()
-
-    present_days = len(set(a.attendance_date for a in attendances))
-    absent_days = total_days - present_days
-    attendance_pct = round((present_days / total_days) * 100, 2) if total_days > 0 else 0
-
-    breakfast_cnt = sum(1 for a in attendances if a.punch_type == "BREAKFAST")
-    lunch_cnt = sum(1 for a in attendances if a.punch_type == "LUNCH")
-    dinner_cnt = sum(1 for a in attendances if a.punch_type == "DINNER")
-    general_in_cnt = sum(1 for a in attendances if a.punch_type in ["IN", "PRESENT"])
-
-    plan_record = db.query(ClientPlan).filter(
-        ClientPlan.client_id == client.id,
-        ClientPlan.start_date <= end_date,
-        ClientPlan.end_date >= start_date
-    ).order_by(ClientPlan.created_at.desc()).first()
-
-    plan_name = "N/A"
-    plan_fee = 0.0
-    if plan_record:
-        p = db.query(Plan).filter(Plan.id == plan_record.plan_id).first()
-        if p:
-            plan_name = p.name
-            plan_fee = p.monthly_fee
-
-    payments = db.query(Payment).filter(
-        Payment.client_id == client.id,
-        Payment.payment_date >= start_date,
-        Payment.payment_date <= end_date
-    ).all()
-
-    total_paid = sum(p.amount for p in payments)
-    balance_due = max(0.0, plan_fee - total_paid)
-
-    return {
-        "statement_period": f"{start_date.strftime('%B %Y')}",
-        "client": {
-            "id": client.id,
-            "client_code": client.client_code,
-            "name": client.name,
-            "mobile": client.mobile,
-            "email": client.email,
-            "biometric_user_id": client.biometric_user_id,
-            "client_type": client.client_type,
-            "status": client.status
-        },
-        "plan": {
-            "name": plan_name,
-            "amount": plan_fee,
-            "start_date": str(plan_record.start_date) if plan_record else None,
-            "end_date": str(plan_record.end_date) if plan_record else None
-        },
-        "attendance": {
-            "total_days": total_days,
-            "present_days": present_days,
-            "absent_days": absent_days,
-            "attendance_percentage": attendance_pct,
-            "meals_used": {
-                "breakfast": breakfast_cnt,
-                "lunch": lunch_cnt,
-                "dinner": dinner_cnt,
-                "general_checkins": general_in_cnt
-            }
-        },
-        "financials": {
-            "plan_fee": plan_fee,
-            "total_paid": total_paid,
-            "balance_due": balance_due,
-            "payment_history": [
-                {
-                    "date": str(p.payment_date),
-                    "amount": p.amount,
-                    "method": p.payment_method,
-                    "reference": p.transaction_reference
-                } for p in payments
-            ]
-        }
-    }
+    try:
+        return BillingService.calculate_monthly_statement(db, client_id, month, year)
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
 
 @router.get("/export/attendance-csv")
 def export_attendance_csv(
