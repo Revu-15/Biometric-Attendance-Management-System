@@ -214,107 +214,76 @@ pip install -r requirements.txt
 uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
 ```
 
-## 📁 Codebase Structure
+## 📁 Codebase Architecture & Directory Guide
 
-```text
-ATTENDIQ Core System
-+-- .github/
-|   \-- workflows/
-|       \-- deploy.yml
-|
-+-- backend/
-|   +-- app/
-|   |   +-- main.py
-|   |
-|   |   +-- core/
-|   |   |   +-- config.py
-|   |   |   +-- database.py
-|   |   |   \-- security.py
-|   |
-|   |   +-- models/
-|   |   |   +-- user.py
-|   |   |   +-- client.py
-|   |   |   +-- plan.py
-|   |   |   +-- client_plan.py
-|   |   |   +-- attendance.py
-|   |   |   +-- payment.py
-|   |   |   +-- device.py
-|   |   |   +-- monthly_lock.py
-|   |   |   +-- system_setting.py
-|   |   |   +-- failed_punch_log.py
-|   |   |   \-- audit_log.py
-|   |
-|   |   +-- schemas/
-|   |   |   \-- schemas.py
-|   |
-|   |   +-- api/
-|   |   |   +-- auth.py
-|   |   |   +-- clients.py
-|   |   |   +-- plans.py
-|   |   |   +-- attendance.py
-|   |   |   +-- payments.py
-|   |   |   +-- reports.py
-|   |   |   +-- devices.py
-|   |   |   \-- audit_logs.py
-|   |
-|   |   +-- services/
-|   |   |   +-- attendance_service.py
-|   |   |   +-- biometric_service.py
-|   |   |   +-- billing_service.py
-|   |   |   +-- report_service.py
-|   |   |   \-- validation_service.py
-|   |
-|   |   +-- workers/
-|   |   |   \-- attendance_sync.py
-|   |
-|   |   \-- integrations/
-|   |       \-- biometric/
-|   |           +-- base.py
-|   |           +-- generic.py
-|   |           \-- zkteco.py
-|   |
-|   \-- requirements.txt
-|
-+-- frontend/
-|   +-- src/
-|   |   +-- App.tsx
-|   |
-|   |   +-- services/
-|   |   |   \-- api.ts
-|   |
-|   |   +-- components/
-|   |   |   +-- Sidebar.tsx
-|   |   |   +-- Navbar.tsx
-|   |   |   +-- ClientProfileModal.tsx
-|   |   |   +-- MonthlyStatementModal.tsx
-|   |   |   \-- PunchSimulatorModal.tsx
-|   |
-|   |   \-- pages/
-|   |       +-- LoginPage.tsx
-|   |       +-- DashboardPage.tsx
-|   |       +-- StaffDashboardPage.tsx
-|   |       +-- ClientsPage.tsx
-|   |       +-- AttendancePage.tsx
-|   |       +-- MealsPage.tsx
-|   |       +-- PlansPage.tsx
-|   |       +-- PaymentsPage.tsx
-|   |       +-- ReportsPage.tsx
-|   |       +-- AnalyticsPage.tsx
-|   |       +-- DevicesPage.tsx
-|   |       +-- RulesAndSettingsPage.tsx
-|   |       +-- AuditLogsPage.tsx
-|   |       \-- AlertsPage.tsx
-|   |
-|   +-- vercel.json
-|   +-- vite.config.ts
-|   \-- package.json
-|
-+-- DEPLOYMENT.md
-+-- PRESENTATION.md
-+-- render.yaml
-+-- vercel.json
-\-- start_system.bat
-```
+<details open>
+<summary><b>📂 Click to Expand / Collapse Full Repository Tree</b></summary>
+
+<br>
+
+* 📁 **`.github/workflows/`**
+  * ⚙️ `deploy.yml` — Automated GitHub Actions CI/CD pipeline deploying React frontend to GitHub Pages.
+* 📁 **`backend/`** — *FastAPI Modular Backend Architecture*
+  * 📁 **`app/`**
+    * ⚡ `main.py` — FastAPI application entry point, CORS middleware, WebSocket gateway & database seeder.
+    * 📁 **`api/`** — *REST API Controllers*
+      * 🔑 `auth.py` — Authentication endpoints (`/login`, `/register`, `/me`).
+      * 👤 `clients.py` — Client CRUD & Enrollment ID search endpoints.
+      * 📋 `plans.py` — Subscription & Fee Plan controllers.
+      * 👆 `attendance.py` — Webhook ingestion endpoint (`/webhook`), simulator & history.
+      * 💰 `payments.py` — Payment transactions & balance ledger API.
+      * 📊 `reports.py` — Dashboard analytics, monthly statements, database backups & lock endpoints.
+      * 📟 `devices.py` — Biometric hardware registration & health monitoring.
+      * 📝 `audit_logs.py` — Immutable security audit log API.
+    * 📁 **`services/`** — *Decoupled Business Logic Engine*
+      * 🛡️ `attendance_service.py` — 6-stage punch validation engine, 5-min duplicate cooldown & monthly lock checks.
+      * 📡 `biometric_service.py` — Device adapter router & hardware ping status monitor.
+      * 💵 `billing_service.py` — Monthly statement calculations & balance dues.
+      * 📈 `report_service.py` — Analytics KPI compiler & system alert feed.
+      * 📑 `validation_service.py` — Validation data contracts.
+    * 📁 **`models/`** — *SQLAlchemy ORM Data Models*
+      * `user.py`, `client.py`, `plan.py`, `client_plan.py`, `attendance.py`, `payment.py`, `device.py`, `monthly_lock.py`, `system_setting.py`, `failed_punch_log.py`, `audit_log.py`.
+    * 📁 **`schemas/`** — *Pydantic Data Serialization*
+      * `schemas.py` — Request/response validation schemas.
+    * 📁 **`core/`** — *Security & Database Connection Engine*
+      * `config.py` — Application configuration & system rules.
+      * `database.py` — SQLAlchemy 2.0 engine & SessionLocal factory.
+      * `security.py` — Bcrypt password hashing & JWT token validation.
+    * 📁 **`integrations/biometric/`** — *Multi-Vendor Hardware Adapters*
+      * `base.py` — Base adapter interface.
+      * `generic.py` — Standard HTTP JSON webhook adapter.
+      * `zkteco.py` — ZKTeco / eSSL ADMS push log adapter.
+    * 📁 **`workers/`** — *Background Recovery Sync*
+      * `attendance_sync.py` — Offline device recovery worker.
+* 📁 **`frontend/`** — *React 18 + TypeScript + Vite UI*
+  * 📁 **`src/`**
+    * ⚡ `App.tsx` — Main application layout & dual RBAC router.
+    * 📡 `services/api.ts` — REST API client with dynamic server URL resolution.
+    * 📁 **`components/`** — *Reusable UI Components*
+      * `Sidebar.tsx`, `Navbar.tsx`, `ClientProfileModal.tsx`, `MonthlyStatementModal.tsx`, `PunchSimulatorModal.tsx`.
+    * 📁 **`pages/`** — *12 Core Dashboard Modules*
+      * `LoginPage.tsx`, `DashboardPage.tsx`, `StaffDashboardPage.tsx`, `ClientsPage.tsx`, `AttendancePage.tsx`, `MealsPage.tsx`, `PlansPage.tsx`, `PaymentsPage.tsx`, `ReportsPage.tsx`, `AnalyticsPage.tsx`, `DevicesPage.tsx`, `RulesAndSettingsPage.tsx`, `AuditLogsPage.tsx`, `AlertsPage.tsx`.
+  * `vite.config.ts` — Vite build proxy configuration.
+  * `vercel.json` — Vercel SPA client-side routing config.
+* 🚀 `DEPLOYMENT.md` — Docker, VPS & Cloud Deployment Guide.
+* 📊 `PRESENTATION.md` — Executive 12-Slide Pitch Deck.
+* ☁️ `render.yaml` — 1-Click Render Cloud Blueprint.
+* ⚡ `start_system.bat` — One-Click Windows Development Launcher.
+
+</details>
+
+---
+
+### 🧩 Module Responsibility Matrix
+
+| Component Layer | Primary Directory | Core Responsibilities |
+|---|---|---|
+| 🌐 **Web UI Dashboard** | `frontend/src/pages/` | 12 interactive dashboard views for **Super Admin** and **Staff Operator** roles. |
+| 🔌 **API Gateway** | `backend/app/api/` | FastAPI REST endpoints handling authentication, webhooks, payments, and reporting. |
+| ⚙️ **Business Logic** | `backend/app/services/` | Punch validation pipeline, duplicate window suppression, monthly financial settlement engine. |
+| 👆 **Biometric Hardware** | `backend/app/integrations/` | Multi-vendor adapters parsing HTTP JSON payloads and ZKTeco ADMS push logs. |
+| 🗄️ **Data Storage** | `backend/app/models/` | SQLAlchemy 2.0 ORM models for Users, Universal Clients, Plans, Attendance, and Audit Logs. |
+| 🚀 **Deployment Automation** | Root Files | `deploy.yml` (GitHub Pages), `render.yaml` (Render API), `vercel.json` (Vercel SPA), `DEPLOYMENT.md`. |
 
 ---
 
