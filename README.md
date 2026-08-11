@@ -216,74 +216,64 @@ uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
 
 ## 📂 Project Structure
 
-<details open>
-<summary><b>📂 Click to Expand / Collapse Full Repository Tree</b></summary>
+### ⚙️ Backend Architecture (`backend/`)
 
-<br>
-
-* 📁 **`.github/workflows/`**
-  * ⚙️ `deploy.yml` — Automated GitHub Actions CI/CD pipeline deploying React frontend to GitHub Pages.
-* 📁 **`backend/`** — *FastAPI Modular Backend Architecture*
-  * 📁 **`app/`**
-    * ⚡ `main.py` — FastAPI application entry point, CORS middleware, WebSocket gateway & database seeder.
-    * 📁 **`api/`** — *REST API Controllers*
-      * 🔑 `auth.py` — Authentication endpoints (`/login`, `/register`, `/me`).
-      * 👤 `clients.py` — Client CRUD & Enrollment ID search endpoints.
-      * 📋 `plans.py` — Subscription & Fee Plan controllers.
-      * 👆 `attendance.py` — Webhook ingestion endpoint (`/webhook`), simulator & history.
-      * 💰 `payments.py` — Payment transactions & balance ledger API.
-      * 📊 `reports.py` — Dashboard analytics, monthly statements, database backups & lock endpoints.
-      * 📟 `devices.py` — Biometric hardware registration & health monitoring.
-      * 📝 `audit_logs.py` — Immutable security audit log API.
-    * 📁 **`services/`** — *Decoupled Business Logic Engine*
-      * 🛡️ `attendance_service.py` — 6-stage punch validation engine, 5-min duplicate cooldown & monthly lock checks.
-      * 📡 `biometric_service.py` — Device adapter router & hardware ping status monitor.
-      * 💵 `billing_service.py` — Monthly statement calculations & balance dues.
-      * 📈 `report_service.py` — Analytics KPI compiler & system alert feed.
-      * 📑 `validation_service.py` — Validation data contracts.
-    * 📁 **`models/`** — *SQLAlchemy ORM Data Models*
-      * `user.py`, `client.py`, `plan.py`, `client_plan.py`, `attendance.py`, `payment.py`, `device.py`, `monthly_lock.py`, `system_setting.py`, `failed_punch_log.py`, `audit_log.py`.
-    * 📁 **`schemas/`** — *Pydantic Data Serialization*
-      * `schemas.py` — Request/response validation schemas.
-    * 📁 **`core/`** — *Security & Database Connection Engine*
-      * `config.py` — Application configuration & system rules.
-      * `database.py` — SQLAlchemy 2.0 engine & SessionLocal factory.
-      * `security.py` — Bcrypt password hashing & JWT token validation.
-    * 📁 **`integrations/biometric/`** — *Multi-Vendor Hardware Adapters*
-      * `base.py` — Base adapter interface.
-      * `generic.py` — Standard HTTP JSON webhook adapter.
-      * `zkteco.py` — ZKTeco / eSSL ADMS push log adapter.
-    * 📁 **`workers/`** — *Background Recovery Sync*
-      * `attendance_sync.py` — Offline device recovery worker.
-* 📁 **`frontend/`** — *React 18 + TypeScript + Vite UI*
-  * 📁 **`src/`**
-    * ⚡ `App.tsx` — Main application layout & dual RBAC router.
-    * 📡 `services/api.ts` — REST API client with dynamic server URL resolution.
-    * 📁 **`components/`** — *Reusable UI Components*
-      * `Sidebar.tsx`, `Navbar.tsx`, `ClientProfileModal.tsx`, `MonthlyStatementModal.tsx`, `PunchSimulatorModal.tsx`.
-    * 📁 **`pages/`** — *12 Core Dashboard Modules*
-      * `LoginPage.tsx`, `DashboardPage.tsx`, `StaffDashboardPage.tsx`, `ClientsPage.tsx`, `AttendancePage.tsx`, `MealsPage.tsx`, `PlansPage.tsx`, `PaymentsPage.tsx`, `ReportsPage.tsx`, `AnalyticsPage.tsx`, `DevicesPage.tsx`, `RulesAndSettingsPage.tsx`, `AuditLogsPage.tsx`, `AlertsPage.tsx`.
-  * `vite.config.ts` — Vite build proxy configuration.
-  * `vercel.json` — Vercel SPA client-side routing config.
-* 🚀 `DEPLOYMENT.md` — Docker, VPS & Cloud Deployment Guide.
-* 📊 `PRESENTATION.md` — Executive 12-Slide Pitch Deck.
-* ☁️ `render.yaml` — 1-Click Render Cloud Blueprint.
-* ⚡ `start_system.bat` — One-Click Windows Development Launcher.
-
-</details>
+| File / Module | Role | Purpose / Description |
+|---|---|---|
+| ⚡ `app/main.py` | Application Entry | FastAPI entry point, CORS middleware, WebSocket gateway & DB seeder |
+| 🔑 `app/api/auth.py` | API Controller | User authentication endpoints (`/login`, `/register`, `/me`) |
+| 👤 `app/api/clients.py` | API Controller | Universal Client directory & Enrollment ID search endpoints |
+| 📋 `app/api/plans.py` | API Controller | Subscription & fee plan controllers |
+| 👆 `app/api/attendance.py` | API Controller | Biometric punch webhook ingestion (`/webhook`), simulator & history |
+| 💰 `app/api/payments.py` | API Controller | Payment transactions & balance ledger API |
+| 📊 `app/api/reports.py` | API Controller | Dashboard analytics, monthly statements, DB backup & lock endpoints |
+| 📟 `app/api/devices.py` | API Controller | Biometric hardware registration & heartbeat status monitoring |
+| 📝 `app/api/audit_logs.py` | API Controller | Immutable security audit log API |
+| 🛡️ `app/services/attendance_service.py` | Business Logic | 6-stage punch validation, 5-min duplicate cooldown & monthly lock checks |
+| 📡 `app/services/biometric_service.py` | Business Logic | Hardware adapter router & device ping status monitor |
+| 💵 `app/services/billing_service.py` | Business Logic | Monthly statement generation & balance due calculations |
+| 📈 `app/services/report_service.py` | Business Logic | Analytics KPI compiler & system alert feed |
+| 🗄️ `app/models/` | Data Models | SQLAlchemy 2.0 ORM models (`User`, `Client`, `Attendance`, `Payment`, `Device`, `MonthlyLock`, `AuditLog`) |
+| 📑 `app/schemas/` | Serialization | Pydantic request & response validation schemas |
+| 🔒 `app/core/` | System Core | Configuration (`config.py`), Database Engine (`database.py`) & JWT Security (`security.py`) |
+| 🔌 `app/integrations/biometric/` | Hardware Adapters | Multi-vendor biometric adapters (`generic.py`, `zkteco.py`) |
+| 🔄 `app/workers/attendance_sync.py` | Background Worker | Async recovery worker for offline device punch logs |
 
 ---
 
-### 🧩 Module Responsibility Matrix
+### 🎨 Frontend Architecture (`frontend/`)
 
-| Component Layer | Primary Directory | Core Responsibilities |
+| Module / Page | Role | Purpose / Description |
 |---|---|---|
-| 🌐 **Web UI Dashboard** | `frontend/src/pages/` | 12 interactive dashboard views for **Super Admin** and **Staff Operator** roles. |
-| 🔌 **API Gateway** | `backend/app/api/` | FastAPI REST endpoints handling authentication, webhooks, payments, and reporting. |
-| ⚙️ **Business Logic** | `backend/app/services/` | Punch validation pipeline, duplicate window suppression, monthly financial settlement engine. |
-| 👆 **Biometric Hardware** | `backend/app/integrations/` | Multi-vendor adapters parsing HTTP JSON payloads and ZKTeco ADMS push logs. |
-| 🗄️ **Data Storage** | `backend/app/models/` | SQLAlchemy 2.0 ORM models for Users, Universal Clients, Plans, Attendance, and Audit Logs. |
-| 🚀 **Deployment Automation** | Root Files | `deploy.yml` (GitHub Pages), `render.yaml` (Render API), `vercel.json` (Vercel SPA), `DEPLOYMENT.md`. |
+| ⚡ `src/App.tsx` | Main Router | Main app layout, dynamic RBAC navigation sidebar & route guards |
+| 📡 `src/services/api.ts` | API Client | REST API client with dynamic server URL resolution |
+| 🧩 `src/components/` | Reusable UI | `Sidebar`, `Navbar`, `ClientProfileModal`, `MonthlyStatementModal`, `PunchSimulatorModal` |
+| 🔑 `src/pages/LoginPage.tsx` | UI View | User login & staff registration interface |
+| 📊 `src/pages/DashboardPage.tsx` | UI View | Executive Super Admin Dashboard with real-time KPIs & charts |
+| 🛠️ `src/pages/StaffDashboardPage.tsx` | UI View | Operational Staff Dashboard for daily attendance & punches |
+| 👥 `src/pages/ClientsPage.tsx` | UI View | Universal Client Directory with Enrollment ID & type search |
+| ⏱️ `src/pages/AttendancePage.tsx` | UI View | Real-time live attendance log feed & manual punch controls |
+| 🍽️ `src/pages/MealsPage.tsx` | UI View | Meal & service consumption tracking (`BREAKFAST`, `LUNCH`, `DINNER`) |
+| 💳 `src/pages/PlansPage.tsx` | UI View | Membership plan setup & client subscription assignments |
+| 💰 `src/pages/PaymentsPage.tsx` | UI View | Financial payment ledger & pending balance tracking |
+| 📑 `src/pages/ReportsPage.tsx` | UI View | Monthly settlement statements & report export controls |
+| 📈 `src/pages/AnalyticsPage.tsx` | UI View | System intelligence, attendance trends & revenue projections |
+| 📟 `src/pages/DevicesPage.tsx` | UI View | Biometric hardware registry & online/offline monitor |
+| ⚙️ `src/pages/RulesAndSettingsPage.tsx` | UI View | Attendance rules, late thresholds & duplicate window settings |
+| 📝 `src/pages/AuditLogsPage.tsx` | UI View | System security audit trail & change logging |
+
+---
+
+### 🚀 Infrastructure & Deployment Files
+
+| Configuration File | Role | Description |
+|---|---|---|
+| ⚙️ `.github/workflows/deploy.yml` | CI/CD | GitHub Actions pipeline deploying React frontend to GitHub Pages |
+| 🚀 `DEPLOYMENT.md` | Documentation | Docker, VPS, Vercel & Render cloud deployment guide |
+| 📊 `PRESENTATION.md` | Slide Deck | 12-Slide executive & technical slide deck |
+| ☁️ `render.yaml` | Cloud Blueprint | 1-Click Render Cloud deployment blueprint for FastAPI |
+| 🌐 `vercel.json` | SPA Routing | Vercel client-side rewrite configuration |
+| ⚡ `start_system.bat` | Launcher | One-click local development launcher script |
 
 ---
 
